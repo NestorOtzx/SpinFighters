@@ -160,6 +160,8 @@ namespace AClockworkBerry
 
         void OnEnable()
         {
+            InitStyles();
+
             if (!ShowInEditor && Application.isEditor) return;
 
             queue = new Queue<LogMessage>();
@@ -199,6 +201,13 @@ namespace AClockworkBerry
         {
             if (!ShowLog) return;
             if (!ShowInEditor && Application.isEditor) return;
+
+            // Asegúrate de que el color de fondo esté actualizado
+            BackgroundColor.a = BackgroundOpacity;
+            Texture2D back = new Texture2D(1, 1);
+            back.SetPixel(0, 0, BackgroundColor);
+            back.Apply();
+            styleContainer.normal.background = back;
 
 			if (styleChanged) InitStyles();
 

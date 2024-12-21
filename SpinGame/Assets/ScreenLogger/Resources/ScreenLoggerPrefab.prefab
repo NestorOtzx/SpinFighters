@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowLog: 1
   ShowInEditor: 1
-  Height: 0.5
+  Height: 0.75
   Width: 0.5
   Margin: 20
   AnchorPosition: 2

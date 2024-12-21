@@ -10,13 +10,20 @@ public class SceneLoader : MonoBehaviour
     {
         instance = this;
     }
-    public void SetScene(int index)
+    public void SetScene(string name)
     {
-        SceneManager.LoadScene(index);
+        SceneManager.LoadScene(name);
+    }
+
+    public void SetNetworkScene(string name)
+    {
+        GameManager.instance.LoadGameScene(name);
     }
 
     public void QuitGame()
     {
         Application.Quit();
     }
+
+
 }

@@ -12,7 +12,6 @@ public class PlayerSpawner : NetworkBehaviour
         GameManager.instance.SetSpawns(spawnPoints);
         if (IsOwner)
         {
-            Debug.Log("Espaunee todo!!");
             for  (int i = 0; i< NetworkManager.Singleton.ConnectedClientsIds.Count; i++)
             {
                 GameManager.instance.SpawnPlayerServerRpc(NetworkManager.Singleton.ConnectedClientsIds[i], i);

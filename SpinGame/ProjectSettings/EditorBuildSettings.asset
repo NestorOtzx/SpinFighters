@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/MatchMaking.unity
     guid: 91058883122f18344b15b16cbaebc4eb
   - enabled: 1
+    path: Assets/Scenes/ScoresScreen.unity
+    guid: 9aed6c3f63eb8db4da9f271d1d42bf59
+  - enabled: 1
     path: Assets/Scenes/Levels/Level1.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects: {}

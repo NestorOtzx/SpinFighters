@@ -16,7 +16,7 @@ public class Lava : NetworkBehaviour
 
             if (((1 << other.gameObject.layer) & playerMask) != 0){
                 Debug.Log("Collision enter is mask");
-                int id = other.gameObject.GetComponent<NetworkPlayerInfo>().GetPlayerInstanceID();
+                ulong id = other.gameObject.GetComponent<NetworkPlayerInfo>().OwnerClientId;
                 GameManager.instance.SetLooserServerRpc(id);
             }
         }
