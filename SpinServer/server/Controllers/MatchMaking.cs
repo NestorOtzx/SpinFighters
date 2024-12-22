@@ -31,15 +31,10 @@ public class MatchMaking : ControllerBase
     [HttpGet("CreateMatch")]
     public IActionResult CreateMatch()
     {
-        int port = FindAvailablePort();
-        if (port == -1) return StatusCode(500, "No available ports");
+        //int port = FindAvailablePort();
+        //if (port == -1) return StatusCode(500, "No available ports");
 
-        var process = StartDedicatedServer(port);
-
-        Console.WriteLine("console writeline SERVIDOR INICIADO DESDE BACKEND EN EL PUERTO "+port+ " pid: "+process.Id);
-        Console.Out.Flush();
-
-        _logger.LogInformation("console logger SERVIDOR INICIADO DESDE BACKEND EN EL PUERTO "+port+ " pid: "+process.Id);
+        var process = StartDedicatedServer(7778);
 
         return Ok("Partida creada con exito");
     }
