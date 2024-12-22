@@ -36,7 +36,7 @@ public class MatchMaking : ControllerBase
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = "/home/ec2-user/SpinFighters/SpinBuilds/Server",
+                    FileName = "/home/ec2-user/SpinFighters/SpinBuilds/Server/spin.x86_64",
                     Arguments = $"-batchmode -nographics '-port {port}'",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
