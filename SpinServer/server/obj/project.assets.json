@@ -34,6 +34,40 @@
           }
         }
       }
+    },
+    "net9.0/linux-x64": {
+      "Microsoft.AspNetCore.OpenApi/9.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.OpenApi": "1.6.17"
+        },
+        "compile": {
+          "lib/net9.0/Microsoft.AspNetCore.OpenApi.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Microsoft.AspNetCore.OpenApi.dll": {
+            "related": ".xml"
+          }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
+      "Microsoft.OpenApi/1.6.17": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Microsoft.OpenApi.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.OpenApi.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      }
     }
   },
   "libraries": {
@@ -80,11 +114,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\proyectos\\Unity\\SpinFighters\\SpinServer\\server\\server.csproj",
+      "projectUniqueName": "D:\\proyectos\\Unity\\SpinFighters\\SpinServer\\Server\\server.csproj",
       "projectName": "server",
-      "projectPath": "D:\\proyectos\\Unity\\SpinFighters\\SpinServer\\server\\server.csproj",
+      "projectPath": "D:\\proyectos\\Unity\\SpinFighters\\SpinServer\\Server\\server.csproj",
       "packagesPath": "C:\\Users\\itsre\\.nuget\\packages\\",
-      "outputPath": "D:\\proyectos\\Unity\\SpinFighters\\SpinServer\\server\\obj\\",
+      "outputPath": "D:\\proyectos\\Unity\\SpinFighters\\SpinServer\\Server\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\itsre\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -133,6 +167,12 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.NETCore.App.Host.linux-x64",
+            "version": "[9.0.0, 9.0.0]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.AspNetCore.App": {
             "privateAssets": "none"
@@ -142,6 +182,11 @@
           }
         },
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
+      }
+    },
+    "runtimes": {
+      "linux-x64": {
+        "#import": []
       }
     }
   }

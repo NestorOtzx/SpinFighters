@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "kF4+Fhbvy9Y=",
+  "dgSpecHash": "flr2IWPgqDE=",
   "success": true,
-  "projectFilePath": "D:\\proyectos\\Unity\\SpinFighters\\SpinServer\\server\\server.csproj",
+  "projectFilePath": "D:\\proyectos\\Unity\\SpinFighters\\SpinServer\\Server\\server.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\itsre\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.0\\microsoft.aspnetcore.openapi.9.0.0.nupkg.sha512",
-    "C:\\Users\\itsre\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512"
+    "C:\\Users\\itsre\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512",
+    "C:\\Users\\itsre\\.nuget\\packages\\microsoft.netcore.app.host.linux-x64\\9.0.0\\microsoft.netcore.app.host.linux-x64.9.0.0.nupkg.sha512"
   ],
   "logs": []
 }
