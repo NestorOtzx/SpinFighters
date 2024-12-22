@@ -61,7 +61,7 @@ public class MatchMaking : ControllerBase
             StartInfo = new ProcessStartInfo
             {
                 FileName = "/home/ec2-user/SpinFighters/SpinBuilds/Server/spin.x86_64",
-                Arguments = $"-batchmode -nographics '-port {port}'",
+                Arguments = $"-batchmode -nographics '-port {port}' -logfile serverlog.txt",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
