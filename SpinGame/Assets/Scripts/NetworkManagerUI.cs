@@ -47,13 +47,13 @@ public class NetworkManagerUI : NetworkBehaviour
 
     private void AddPlayerToList(ulong clientID)
     {
-        Debug.Log("Connect player 0");
+        Debug.Log("UI CONNECTING PLAYER STEP 1");
         playerConnectionUI.ConnectPlayer("Player "+NetworkManager.Singleton.ConnectedClientsIds.Count.ToString(), clientID);
     }
 
     private void RemovePlayerFromList(ulong clientID)
     {
-        Debug.Log("Disconnect player 0");
+        Debug.Log("UI REMOVING PLAYER STEP 1");
         playerConnectionUI.DisconnectPlayer(clientID);
     }
 

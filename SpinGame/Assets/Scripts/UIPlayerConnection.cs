@@ -21,9 +21,15 @@ public class UIPlayerConnection : NetworkBehaviour
 
     private void Awake()
     {
+        if (IsServer)
+        {
+            Debug.Log("[Server] UI AWAKE");
+        }
+        
         clientIDs = new NetworkList<ulong>();
         clientNames = new NetworkList<FixedString32Bytes>();
 
+        /*
         if ( NetworkManager.Singleton)
         {
             int count = 1;
@@ -32,11 +38,15 @@ public class UIPlayerConnection : NetworkBehaviour
                 ConnectPlayer("Player "+count.ToString(), id);
                 count++;
             }
-        }
+        }*/
     }
 
     private void OnEnable()
     {
+        if (IsServer)
+        {
+            Debug.Log("[Server] UI ON ENABLE");
+        }
         clientNames.OnListChanged += UpdateName;
     }
 
@@ -46,31 +56,26 @@ public class UIPlayerConnection : NetworkBehaviour
     }
     public void ConnectPlayer(string playerName, ulong id)
     {
-        Debug.Log("Connect player 2");
+        Debug.Log("UI CONNECTING PLAYER STEP 2");
         if (IsServer)   
-            AddClientsServerRpc(id, playerName);   
+        {
+            Debug.Log("[ServerRcp] UI CONNECTING PLAYER STEP 4");
+            clientIDs.Add(id);
+            clientNames.Add(playerName); 
+        }
+            
     }
 
     public void DisconnectPlayer(ulong id)
     {
-        Debug.Log("Connect player 2");
+        Debug.Log("UI REMOVING PLAYER STEP 2");
         if (IsServer)   
-            RemoveClientsServerRpc(id);
-    }
-
-    [ServerRpc]
-    private void AddClientsServerRpc(ulong id, string playername)
-    {
-        clientIDs.Add(id);
-        clientNames.Add(playername);
-    }
-
-    [ServerRpc]
-    private void RemoveClientsServerRpc(ulong id)
-    {
-        int index = clientIDs.IndexOf(id);
-        clientIDs.RemoveAt(index);
-        clientNames.RemoveAt(index);
+        {
+            Debug.Log("[ServerRcp] UI REMOVING PLAYER STEP 4");
+            int index = clientIDs.IndexOf(id);
+            clientIDs.RemoveAt(index);
+            clientNames.RemoveAt(index);
+        }
     }
 
     private void UpdateName(NetworkListEvent<FixedString32Bytes> changeEvent)
@@ -82,7 +87,7 @@ public class UIPlayerConnection : NetworkBehaviour
         }
         uiPlayers.Clear();
         uiPlayerTexts.Clear();
-        Debug.Log("Los nombres cambiaron!!");
+        Debug.Log("NAMES CHANGED UPDATE UI!!");
         for (int i = 0; i< clientNames.Count; i++)
         {
             GameObject obj = Instantiate(prefab, prefabsContainer);

@@ -10,11 +10,11 @@ public class PlayerSpawner : NetworkBehaviour
     void Start()
     {
         GameManager.instance.SetSpawns(spawnPoints);
-        if (IsOwner)
+        if (IsServer)
         {
             for  (int i = 0; i< NetworkManager.Singleton.ConnectedClientsIds.Count; i++)
             {
-                GameManager.instance.SpawnPlayerServerRpc(NetworkManager.Singleton.ConnectedClientsIds[i], i);
+                GameManager.instance.SpawnPlayerSrv(NetworkManager.Singleton.ConnectedClientsIds[i], i);
             }
         }
     }

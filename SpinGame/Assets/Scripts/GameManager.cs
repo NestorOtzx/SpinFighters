@@ -50,8 +50,7 @@ public class GameManager : NetworkBehaviour
         playerSpawns = spawns;
     }
 
-    [ServerRpc]
-    public void SpawnPlayerServerRpc(ulong clientId, int spawn_id)
+    public void SpawnPlayerSrv(ulong clientId, int spawn_id)
     {
         // Instanciar el jugador
         GameObject playerInstance = Instantiate(playerPrefab, playerSpawns[spawn_id].position, Quaternion.identity);
@@ -69,6 +68,7 @@ public class GameManager : NetworkBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;
         if (NetworkManager.Singleton != null)
         {
+            NetworkManager.Singleton.OnServerStarted += OnServerStarted;
             NetworkManager.Singleton.OnServerStopped += OnServerStopped;
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
@@ -82,6 +82,7 @@ public class GameManager : NetworkBehaviour
 
         if (NetworkManager.Singleton != null)
         {
+            NetworkManager.Singleton.OnServerStarted -= OnServerStarted;
             NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnect;
             NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
             NetworkManager.Singleton.OnServerStopped -= OnServerStopped;
@@ -89,11 +90,15 @@ public class GameManager : NetworkBehaviour
     }
 
     private void OnClientDisconnect(ulong clientID){
-        if (IsOwner)
+        if (IsServer)
         {
             Debug.Log("Cliente "+ clientID + " desconectado.");
-            SetLooserServerRpc(clientID);
+            //SetLooserSrv(clientID);
         }
+    }
+
+    private void OnServerStarted(){
+        Debug.Log("Servidor iniciado! Gamemanager ");
     }
 
     private void OnServerStopped(bool action){
@@ -169,8 +174,7 @@ public class GameManager : NetworkBehaviour
         }
     }    
 
-    [ServerRpc]
-    public void SetLooserServerRpc(ulong looserID)
+    public void SetLooserSrv(ulong looserID)
     {
         if (remainingPlayerIDs.Contains(looserID))
         {
