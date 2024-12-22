@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.Net;
+using System.Net.Sockets;
 using System.Web;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
@@ -13,8 +16,83 @@ public class MatchMaking : ControllerBase
     }
 
     [HttpGet("CreateMatch")]
-    public string CreateMatch()
+    public IActionResult CreateMatch()
     {
-        return "<h1>create match</h1>";
+        int port = FindAvailablePort();
+        if (port == -1) return StatusCode(500, "No available ports");
+
+        var process = StartDedicatedServer(port);
+
+        Console.WriteLine("SERVIDOR INICIADO DESDE BACKEND EN EL PUERTO "+port+ " pid: "+process.Id);
+
+        return Ok("Partida creada con exito");
+    }
+
+    private Process StartDedicatedServer(int port)
+    {
+        try
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "/home/ec2-user/SpinFighters/SpinBuilds/Server",
+                    Arguments = $"-batchmode -nographics '-port {port}'",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+
+            process.Start();
+
+            // Leer salida del proceso para verificar errores
+            string output = process.StandardError.ReadToEnd();
+            if (!string.IsNullOrEmpty(output))
+            {
+                Console.WriteLine($"Server error: {output}");
+                return null;
+            }
+
+            return process;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error starting server: {ex.Message}");
+            return null;
+        }
+    }
+
+    private bool IsPortAvailable(int port)
+    {
+        try
+        {
+            using (var tcpListener = new TcpListener(IPAddress.Any, port))
+            {
+                tcpListener.Start();
+                tcpListener.Stop();
+                return true;
+            }
+        }
+        catch (SocketException)
+        {
+            return false; // El puerto está ocupado
+        }
+    }
+
+    private int FindAvailablePort()
+    {
+        const int startPort = 7777;
+        const int endPort = 20000; // Rango de puertos disponibles
+
+        for (int port = startPort; port <= endPort; port++)
+        {
+            if (IsPortAvailable(port))
+            {
+                return port;
+            }
+        }
+        return -1; // No hay puertos disponibles
     }
 }
