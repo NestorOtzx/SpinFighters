@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Unity.Netcode.Transports.UTP;
 using System.Net;
+using System.Linq;
 
 
 public class ServerManager : MonoBehaviour
@@ -29,7 +30,17 @@ public class ServerManager : MonoBehaviour
                 {
                     Debug.Log("[SERVER WARNING] RUNNING ON LOCALHOST");
                 }
-                ConfigureTransport(ip, 7777);
+
+                var args = System.Environment.GetCommandLineArgs();
+                // Configurar puerto basado en el argumento
+                var portArg = args.FirstOrDefault(arg => arg.StartsWith("-port"));
+                ushort port = 0;
+                if (portArg != null)
+                {
+                    port = ushort.Parse(portArg.Split(' ')[1]);
+                }
+
+                ConfigureTransport(ip, port);
                 NetworkManager.Singleton.StartServer();
             }
         }

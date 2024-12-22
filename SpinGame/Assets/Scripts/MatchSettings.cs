@@ -7,5 +7,6 @@ public class MatchSettings : MonoBehaviour
     private void Awake()
     {
         GameManager.instance.RestartMatch();
+
     }
 }

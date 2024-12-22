@@ -3,12 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.Netcode;
+using TMPro;
+using Unity.Netcode.Transports.UTP;
 
 public class NetworkManagerUI : NetworkBehaviour
 {
     [SerializeField] private Button [] buttons;
 
     [SerializeField] private UIPlayerConnection playerConnectionUI;
+
+
+    [SerializeField] private TMP_InputField ipInput;
+    [SerializeField] private TMP_InputField portInput;
+    
 
     
 
@@ -21,8 +28,18 @@ public class NetworkManagerUI : NetworkBehaviour
             NetworkManager.Singleton.StartHost();
             });
         buttons[2].onClick.AddListener(() => {
+            string ip = ipInput.text;
+            ushort port = ushort.Parse(portInput.text);
+            ConfigureTransport(ip, port);
             NetworkManager.Singleton.StartClient();
             });
+    }
+
+    void ConfigureTransport(string ip, ushort port)
+    {
+        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+        transport.ConnectionData.Address = ip; // Escuchar en todas las interfaces
+        transport.ConnectionData.Port = port;        // Puerto personalizado
     }
 
     private void OnEnable()
