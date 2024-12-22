@@ -9,6 +9,13 @@ using Microsoft.AspNetCore.Mvc;
 [Route("[controller]")]
 public class MatchMaking : ControllerBase
 {
+    private readonly ILogger<MatchMaking> _logger;
+
+    public MatchMaking(ILogger<MatchMaking> logger)
+    {
+        _logger = logger;
+    }
+
     [HttpGet]
     public ContentResult Get()
     {
@@ -29,7 +36,10 @@ public class MatchMaking : ControllerBase
 
         var process = StartDedicatedServer(port);
 
-        Console.WriteLine("SERVIDOR INICIADO DESDE BACKEND EN EL PUERTO "+port+ " pid: "+process.Id);
+        Console.WriteLine("console writeline SERVIDOR INICIADO DESDE BACKEND EN EL PUERTO "+port+ " pid: "+process.Id);
+        Console.Out.Flush();
+
+        _logger.LogInformation("console logger SERVIDOR INICIADO DESDE BACKEND EN EL PUERTO "+port+ " pid: "+process.Id);
 
         return Ok("Partida creada con exito");
     }

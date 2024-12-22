@@ -3,6 +3,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Agregar servicios necesarios para los controladores
 builder.Services.AddControllers();
 
+// Configuración de logging para consola
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 // Opcional: Agregar compatibilidad con Swagger para documentación
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
