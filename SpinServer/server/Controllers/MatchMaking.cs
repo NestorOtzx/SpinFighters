@@ -69,7 +69,25 @@ public class MatchMaking : ControllerBase
             }
         };
 
-        return process.Start();
+        process.OutputDataReceived += (sender, e) =>
+        {
+            if (!string.IsNullOrEmpty(e.Data))
+            {
+                Console.WriteLine($"[OUTPUT] {e.Data}");
+            }
+        };
+
+        process.ErrorDataReceived += (sender, e) =>
+        {
+            if (!string.IsNullOrEmpty(e.Data))
+            {
+                Console.WriteLine($"[ERROR] {e.Data}");
+            }
+        };
+        bool worked = process.Start();
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+        return worked;
     }
 
     private bool IsPortAvailable(int port)
