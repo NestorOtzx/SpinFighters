@@ -1,12 +1,20 @@
+using System.Web;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("[controller]")]
 public class MatchMaking : ControllerBase
 {
-    [HttpGet("CreateGame")]
-    public string Get()
+    [HttpGet]
+    public ContentResult Get()
     {
-        return "Crear partida";
+        return base.Content("<div>Hello world</div>", "text/html");
+    }
+
+    [HttpGet("CreateMatch")]
+    public string CreateMatch()
+    {
+        return "<h1>create match</h1>";
     }
 }

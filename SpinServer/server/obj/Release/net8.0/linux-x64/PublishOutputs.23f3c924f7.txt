@@ -1,0 +1,12 @@
+D:\proyectos\Unity\SpinFighters\SpinServer\server\bin\Release\net8.0\linux-x64\publish\server
+D:\proyectos\Unity\SpinFighters\SpinServer\server\bin\Release\net8.0\linux-x64\publish\appsettings.Development.json
+D:\proyectos\Unity\SpinFighters\SpinServer\server\bin\Release\net8.0\linux-x64\publish\appsettings.json
+D:\proyectos\Unity\SpinFighters\SpinServer\server\bin\Release\net8.0\linux-x64\publish\server.dll
+D:\proyectos\Unity\SpinFighters\SpinServer\server\bin\Release\net8.0\linux-x64\publish\server.deps.json
+D:\proyectos\Unity\SpinFighters\SpinServer\server\bin\Release\net8.0\linux-x64\publish\server.runtimeconfig.json
+D:\proyectos\Unity\SpinFighters\SpinServer\server\bin\Release\net8.0\linux-x64\publish\server.pdb
+D:\proyectos\Unity\SpinFighters\SpinServer\server\bin\Release\net8.0\linux-x64\publish\Microsoft.AspNetCore.OpenApi.dll
+D:\proyectos\Unity\SpinFighters\SpinServer\server\bin\Release\net8.0\linux-x64\publish\Microsoft.OpenApi.dll
+D:\proyectos\Unity\SpinFighters\SpinServer\server\bin\Release\net8.0\linux-x64\publish\Swashbuckle.AspNetCore.Swagger.dll
+D:\proyectos\Unity\SpinFighters\SpinServer\server\bin\Release\net8.0\linux-x64\publish\Swashbuckle.AspNetCore.SwaggerGen.dll
+D:\proyectos\Unity\SpinFighters\SpinServer\server\bin\Release\net8.0\linux-x64\publish\Swashbuckle.AspNetCore.SwaggerUI.dll
