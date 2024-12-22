@@ -34,13 +34,8 @@ public class MatchMaking : ControllerBase
         try{
             int port = FindAvailablePort();
             Console.WriteLine($"Puerto encontrado: {port}");
-            var process = StartDedicatedServer(port);
-            Console.WriteLine($"Server iniciado en paralelo en el puerto: {port}");
-
-            await process;
-
-            Console.WriteLine($"Servidor en puerto {port} cerrado");
-
+            bool worked = StartDedicatedServer(port);
+            Console.WriteLine($"Server iniciado? {worked}");
         }catch(Exception e)
         {
             Console.Write("ERROR AL CREAR PARTIDA");
@@ -48,32 +43,22 @@ public class MatchMaking : ControllerBase
         }
     }
 
-    private async Task StartDedicatedServer(int port)
+    private bool StartDedicatedServer(int port)
     {
-        await Task.Run(() => {
-            var process = new Process
+        var process = new Process
+        {
+            StartInfo = new ProcessStartInfo
             {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "/home/ec2-user/SpinFighters/SpinBuilds/Server/spin.x86_64",
-                    Arguments = $"-batchmode -nographics '-port {port}'",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                }
-            };
-
-            process.Start();
-
-            // Leer salida del proceso para verificar errores
-            string output = process.StandardError.ReadToEnd();
-            if (!string.IsNullOrEmpty(output))
-            {
-                throw new Exception($"Server error: {output}");
+                FileName = "/home/ec2-user/SpinFighters/SpinBuilds/Server/spin.x86_64",
+                Arguments = $"-batchmode -nographics '-port {port}'",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
             }
-        });
-        
+        };
+
+        return process.Start();
     }
 
     private bool IsPortAvailable(int port)
