@@ -33,12 +33,13 @@ public class MatchMaking : ControllerBase
     {
         try{
             int port = FindAvailablePort();
+            Console.WriteLine($"Puerto encontrado: {port}");
             var process = StartDedicatedServer(port);
-            Console.WriteLine("Server iniciado en paralelo en el puerto: ", port);
+            Console.WriteLine($"Server iniciado en paralelo en el puerto: {port}");
 
             await process;
 
-            Console.WriteLine($"Servidor en puerto {port} cerrado: ");
+            Console.WriteLine($"Servidor en puerto {port} cerrado");
 
         }catch(Exception e)
         {
