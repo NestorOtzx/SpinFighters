@@ -29,20 +29,27 @@ public class MatchMaking : ControllerBase
     }
 
     [HttpGet("CreateMatch")]
-    public IActionResult CreateMatch()
+    public async Task CreateMatch()
     {
-        //int port = FindAvailablePort();
-        //if (port == -1) return StatusCode(500, "No available ports");
+        try{
+            int port = FindAvailablePort();
+            var process = StartDedicatedServer(port);
+            Console.WriteLine("Server iniciado en paralelo en el puerto: ", port);
 
-        var process = StartDedicatedServer(7778);
+            await process;
 
-        return Ok("Partida creada con exito");
+            Console.WriteLine($"Servidor en puerto {port} cerrado: ");
+
+        }catch(Exception e)
+        {
+            Console.Write("ERROR AL CREAR PARTIDA");
+            Console.WriteLine(e.Message);
+        }
     }
 
-    private Process StartDedicatedServer(int port)
+    private async Task StartDedicatedServer(int port)
     {
-        try
-        {
+        await Task.Run(() => {
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -62,17 +69,10 @@ public class MatchMaking : ControllerBase
             string output = process.StandardError.ReadToEnd();
             if (!string.IsNullOrEmpty(output))
             {
-                Console.WriteLine($"Server error: {output}");
-                return null;
+                throw new Exception($"Server error: {output}");
             }
-
-            return process;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error starting server: {ex.Message}");
-            return null;
-        }
+        });
+        
     }
 
     private bool IsPortAvailable(int port)
@@ -104,6 +104,6 @@ public class MatchMaking : ControllerBase
                 return port;
             }
         }
-        return -1; // No hay puertos disponibles
+        throw new Exception("No available ports!!");
     }
 }
