@@ -15,6 +15,12 @@ public class MatchMaking : ControllerBase
         return base.Content("<div>Hello world</div>", "text/html");
     }
 
+    [HttpGet("CreateMatchTest")]
+    public IActionResult CreateMatch2()
+    {
+        return Ok("RESPUESTAA");
+    }
+
     [HttpGet("CreateMatch")]
     public IActionResult CreateMatch()
     {
