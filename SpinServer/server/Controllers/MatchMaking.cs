@@ -61,7 +61,7 @@ public class MatchMaking : ControllerBase
             StartInfo = new ProcessStartInfo
             {
                 FileName = "/home/ec2-user/SpinFighters/SpinBuilds/Server/spin.x86_64",
-                Arguments = $"-batchmode -nographics '-port {port}' -logfile serverlog.txt",
+                Arguments = $"-batchmode -nographics \"-port {port}\" -logfile serverlog.txt",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
@@ -90,20 +90,20 @@ public class MatchMaking : ControllerBase
         return worked;
     }
 
-    private bool IsPortAvailable(int port)
+    static bool IsUdpPortInUse(int port)
     {
         try
         {
-            using (var tcpListener = new TcpListener(IPAddress.Any, port))
+            using (UdpClient client = new UdpClient(port))
             {
-                tcpListener.Start();
-                tcpListener.Stop();
-                return true;
+                // Intentar vincular el puerto UDP
+                client.Close();
             }
+            return false; // El puerto no está en uso
         }
         catch (SocketException)
         {
-            return false; // El puerto está ocupado
+            return true; // El puerto está en uso
         }
     }
 
@@ -114,7 +114,7 @@ public class MatchMaking : ControllerBase
 
         for (int port = startPort; port <= endPort; port++)
         {
-            if (IsPortAvailable(port))
+            if (IsUdpPortInUse(port))
             {
                 return port;
             }
