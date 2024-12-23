@@ -7,7 +7,7 @@ Library: D:\proyectos\Unity\SpinFighters\SpinGame\Temp\StagingArea\Data\Plugins\
 --dump=Function
 --float-precision=Standard
 --target-framework=NetFramework
---linker-options=PdbAltPath="PoolBar_Data/Plugins/x86_64/lib_burst_generated.pdb"
+--linker-options=PdbAltPath="SpinFighters_Data/Plugins/x86_64/lib_burst_generated.pdb"
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=D:\proyectos\Unity\SpinFighters\SpinGame\Temp\Burst
 --key-folder=D:/program_files/UnityHub/Editor/2021.3.42f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport
@@ -104,7 +104,7 @@ Library: D:\proyectos\Unity\SpinFighters\SpinGame\Temp\StagingArea\Data\Plugins\
 --dump=Function
 --float-precision=Standard
 --target-framework=NetFramework
---linker-options=PdbAltPath="PoolBar_Data/Plugins/x86_64/lib_burst_generated.pdb"
+--linker-options=PdbAltPath="SpinFighters_Data/Plugins/x86_64/lib_burst_generated.pdb"
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=D:\proyectos\Unity\SpinFighters\SpinGame\Temp\Burst
 --key-folder=D:/program_files/UnityHub/Editor/2021.3.42f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport

@@ -56,5 +56,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "SpinGame.sln"
+    "dotnet.defaultSolution": "SpinGame.sln",
+    "FSharp.suggestGitignore": false
 }

@@ -18,6 +18,9 @@ EditorBuildSettings:
     path: Assets/Scenes/ScoresScreen.unity
     guid: 9aed6c3f63eb8db4da9f271d1d42bf59
   - enabled: 1
+    path: Assets/Scenes/JoinMatch.unity
+    guid: 5bf95c9437c138b4faf4db1a4d76a5d8
+  - enabled: 1
     path: Assets/Scenes/Levels/Level1.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects: {}
