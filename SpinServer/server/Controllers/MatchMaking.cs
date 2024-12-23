@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 [Route("[controller]")]
 public class MatchMaking : ControllerBase
 {
-    private HashSet<int> portsUsed = new HashSet<int>();
+    private static HashSet<int> portsUsed = new HashSet<int>();
 
     [HttpGet]
     public ContentResult Get()
@@ -80,20 +80,25 @@ public class MatchMaking : ControllerBase
             }
         };
 
+        Console.WriteLine($"Add port!! {port}");
         portsUsed.Add(port);
+        foreach (var el in portsUsed)
+        {
+            Console.WriteLine($"Port used: {el}");
+        }
         bool worked = process.Start();
 
         process.Exited += (sender, e) => {
             portsUsed.Remove(port);
             Console.WriteLine($"BORRANDO EL PUERTO {port} de la lista!!");
         };
-        
+
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
         return worked;
     }
 
-    private int FindAvailablePort()
+    private static int FindAvailablePort()
     {
         const int startPort = 7777;
         const int endPort = 20000; // Rango de puertos disponibles
