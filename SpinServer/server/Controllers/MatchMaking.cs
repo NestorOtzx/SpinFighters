@@ -10,12 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 [Route("[controller]")]
 public class MatchMaking : ControllerBase
 {
-    private readonly ILogger<MatchMaking> _logger;
-
-    public MatchMaking(ILogger<MatchMaking> logger)
-    {
-        _logger = logger;
-    }
+    private HashSet<int> portsUsed = new HashSet<int>();
 
     [HttpGet]
     public ContentResult Get()
@@ -61,7 +56,7 @@ public class MatchMaking : ControllerBase
             StartInfo = new ProcessStartInfo
             {
                 FileName = "/home/ec2-user/SpinFighters/SpinBuilds/Server/spin.x86_64",
-                Arguments = $"-batchmode -nographics \"-port {port}\" -logfile serverlog.txt",
+                Arguments = $"-batchmode -nographics \"-port {port}\"",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
@@ -84,27 +79,18 @@ public class MatchMaking : ControllerBase
                 Console.WriteLine($"[ERROR] {e.Data}");
             }
         };
+
+        portsUsed.Add(port);
         bool worked = process.Start();
+
+        process.Exited += (sender, e) => {
+            portsUsed.Remove(port);
+            Console.WriteLine($"BORRANDO EL PUERTO {port} de la lista!!");
+        };
+        
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
         return worked;
-    }
-
-    static bool IsUdpPortInUse(int port)
-    {
-        try
-        {
-            using (UdpClient client = new UdpClient(port))
-            {
-                // Intentar vincular el puerto UDP
-                client.Close();
-            }
-            return false; // El puerto no está en uso
-        }
-        catch (SocketException)
-        {
-            return true; // El puerto está en uso
-        }
     }
 
     private int FindAvailablePort()
@@ -114,7 +100,7 @@ public class MatchMaking : ControllerBase
 
         for (int port = startPort; port <= endPort; port++)
         {
-            if (IsUdpPortInUse(port))
+            if (!portsUsed.Contains(port))
             {
                 return port;
             }
