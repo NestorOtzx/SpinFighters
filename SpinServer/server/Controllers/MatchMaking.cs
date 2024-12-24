@@ -86,8 +86,11 @@ public class MatchMaking : ControllerBase
                 RedirectStandardError = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
-            }
+            },
+            EnableRaisingEvents = true // Permite que el evento Exited sea activado
         };
+
+        //xd
 
         process.OutputDataReceived += (sender, e) =>
         {
@@ -104,8 +107,6 @@ public class MatchMaking : ControllerBase
                 Console.WriteLine($"[ERROR] {e.Data}");
             }
         };
-        
-        
 
         Console.WriteLine($"Add port!! {port}");
         portsUsed.Add(port);
