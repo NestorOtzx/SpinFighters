@@ -70,7 +70,7 @@ public class MatchMaking : ControllerBase
         {
             Console.WriteLine("ERROR AL OBTENER PARTIDAS");
             Console.WriteLine(e.Message);
-            return StatusCode(500, "{nothing}");
+            return StatusCode(500, $"Error: {e.Message}");
         }
     }
 
@@ -115,10 +115,7 @@ public class MatchMaking : ControllerBase
         }
         bool worked = process.Start();
 
-        Session session = new Session();
-        session.port = port;
-        session.pid = process.Id;
-        session.name = "Game "+port.ToString();
+        Session session = new Session("Game"+port.ToString(), port, process.Id);
 
         currentSessions.Add(session);
         

@@ -1,7 +1,11 @@
 
-[System.Serializable]
-public struct Session{
-    public int port;
-    public string name;
-    public int pid;
+
+public class Session{
+    public int port {get; set;}
+    public string name {get; set;}
+    public int pid {get; set;}
+    public Session(string _name, int _port, int _pid)
+    {
+        name =_name; port = _port; pid = _pid;
+    }
 }
