@@ -6,7 +6,7 @@ using Unity.Netcode;
 using TMPro;
 
 
-public class ClientConnectionUI : NetworkBehaviour
+public class ClientConnectionUI : MonoBehaviour
 {
     [SerializeField] private Button [] buttons;
     [SerializeField] private TMP_InputField ipInput;
@@ -14,16 +14,17 @@ public class ClientConnectionUI : NetworkBehaviour
     
     private void Start()
     {
+        SessionManager session =FindObjectOfType<SessionManager>();
         buttons[0].onClick.AddListener(() => {
             Debug.Log("Clicked Find games");
             });
         buttons[1].onClick.AddListener(() => {
             Debug.Log("Clicked connect player");
-            SessionManager.instance.ConnectClientToMatch(ipInput.text,  ushort.Parse(portInput.text));
+            session.ConnectClientToMatch(ipInput.text,  ushort.Parse(portInput.text));
             });
         buttons[2].onClick.AddListener(() => {
             Debug.Log("Clicked create match");
-            SessionManager.instance.CreateMatch(ipInput.text);
+            session.CreateMatch(ipInput.text);
             });
     }
 }

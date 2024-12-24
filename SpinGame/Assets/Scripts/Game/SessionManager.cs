@@ -10,40 +10,10 @@ using System;
 using UnityEngine.Networking;
 public class SessionManager : NetworkBehaviour
 {
-
-    public static SessionManager instance;
-
-
     struct CreateMatchData{
         public string ip;
         public int port;
     };
-
-    private void Awake()
-    {
-
-        // Verificar si ya existe otro NetworkManager activo
-        if (instance != null)
-        {
-            Destroy(gameObject);
-        }
-        else if (SceneManager.GetActiveScene().name == Utilities.SceneNames.MainMenu.ToString()) //en el main menu no habrá sesiones
-        {
-            Destroy(gameObject);
-        }
-        else{
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-    }
-
-    private void OnEnable()
-    {
-        if (NetworkManager.Singleton)
-        {
-            
-        }   
-    }
 
     private void OnDisable()
     {
@@ -52,7 +22,6 @@ public class SessionManager : NetworkBehaviour
         {
             NetworkManager.Singleton.OnClientStarted-=OnClientStarted;
             NetworkManager.Singleton.OnServerStarted-=OnServerStarted;
-            NetworkManager.Singleton.OnClientConnectedCallback-= OnClientConnect;
             NetworkManager.Singleton.OnClientDisconnectCallback-= OnClientDisonnect;
         }
     }
@@ -62,7 +31,6 @@ public class SessionManager : NetworkBehaviour
         if (!NetworkManager.Singleton.IsServer)
         {
             NetworkManager.Singleton.OnClientStarted+=OnClientStarted;
-            NetworkManager.Singleton.OnClientConnectedCallback+= OnClientConnect;
             NetworkManager.Singleton.OnClientDisconnectCallback+= OnClientDisonnect;
             NetworkManager.Singleton.OnServerStarted += OnServerStarted;
             string ip = GetLocalIPAddress();
@@ -77,6 +45,7 @@ public class SessionManager : NetworkBehaviour
 
             ConfigureTransport(ip, port);
             NetworkManager.Singleton.StartServer();
+            
         }
     }
 
@@ -90,7 +59,7 @@ public class SessionManager : NetworkBehaviour
             string ipAddress = transport.ConnectionData.Address;
 
             Debug.Log($"El servidor está corriendo en la IP: {ipAddress}, Puerto: {port}");
-            //SceneManager.LoadScene(Utilities.SceneNames.MatchMaking.ToString());
+            NetworkManager.Singleton.SceneManager.LoadScene(Utilities.SceneNames.MatchMaking.ToString(), LoadSceneMode.Single);
         }
     }
 
@@ -156,31 +125,9 @@ public class SessionManager : NetworkBehaviour
     }
 
 
-
-    private void OnClientConnect(ulong clientID)
-    {
-        Debug.Log("Player "+clientID+ " connected");
-        //currentPort.text = "Port: "+transport.ConnectionData.Port;
-        //playerConnectionUI.ConnectPlayer("Player "+NetworkManager.Singleton.ConnectedClientsIds.Count.ToString(), clientID);
-    }
-
-    [ServerRpc(RequireOwnership =false)]
-    public void ClientConnectedServerRpc(ulong clientID)
-    {
-
-    }
-
-    [ClientRpc]
-    public void ClientConnectedClientRpc(ulong clientID)
-    {
-        
-
-    }
-
     private void OnClientDisonnect(ulong clientID)
     {
         Debug.Log("Player "+clientID+ " disconnected");
-        //playerConnectionUI.DisconnectPlayer(clientID);
     }
 
 

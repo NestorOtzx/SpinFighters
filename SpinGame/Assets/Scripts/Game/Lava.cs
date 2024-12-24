@@ -10,7 +10,7 @@ public class Lava : NetworkBehaviour
     private void OnCollisionEnter(Collision other)
     {
         Debug.Log("Collision enter");
-        if (IsServer)
+        if (NetworkManager.Singleton.IsServer)
         {
             Debug.Log("Collision enter is server" + other.gameObject.name);
 

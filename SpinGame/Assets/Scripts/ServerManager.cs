@@ -8,13 +8,23 @@ using System.Net;
 using System.Linq;
 
 
+
 public class ServerManager : MonoBehaviour
 {
 
-#if UNITY_SERVER
+    private static bool runAsServer = false;
     // Start is called before the first frame update
     void Start()
     {
+        if (runAsServer)
+        {
+            RunServer();
+        }
+    }
+
+    public void RunServer()
+    {
+        runAsServer = true;
 
         if (SceneManager.GetActiveScene().name == Utilities.SceneNames.MainMenu.ToString())
         {
@@ -22,7 +32,7 @@ public class ServerManager : MonoBehaviour
         }
         else if(SceneManager.GetActiveScene().name == Utilities.SceneNames.JoinMatch.ToString())
         {
-            SessionManager.instance.ConnectServer();
+            FindObjectOfType<SessionManager>().ConnectServer();
         }
         else if (SceneManager.GetActiveScene().name == Utilities.SceneNames.MatchMaking.ToString())
         {
@@ -30,7 +40,5 @@ public class ServerManager : MonoBehaviour
         }
     }
 
-    
 
-#endif
 }

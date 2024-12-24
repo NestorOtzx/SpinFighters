@@ -2,100 +2,128 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using Unity.Collections;
-using Unity.VisualScripting;
 
 public class UIPlayerConnection : NetworkBehaviour
 {
     [SerializeField] private GameObject prefab;
     [SerializeField] private Transform prefabsContainer;
 
+    private NetworkList<ulong> clientIDs;
+    private NetworkList<FixedString128Bytes> clientNames;
 
-    public NetworkList<ulong> clientIDs;
-    public NetworkList<FixedString32Bytes> clientNames;
+    private bool idsUpdated = true, namesUpdated = true; 
 
-    private Dictionary<ulong, GameObject> uiPlayers = new Dictionary<ulong, GameObject>();
-    private Dictionary<ulong, TextMeshProUGUI> uiPlayerTexts = new Dictionary<ulong, TextMeshProUGUI>();
 
-    private void Awake()
+    private Dictionary<ulong, GameObject> prefInstances = new Dictionary<ulong, GameObject>();
+
+     private void Awake()
     {
-        if (IsServer)
-        {
-            Debug.Log("[Server] UI AWAKE");
-        }
-        
+        // Inicializar la lista en el constructor, pero no modificarla aún.
+        Debug.Log("[IMPORTANT LOG -------- ]Call start");
         clientIDs = new NetworkList<ulong>();
-        clientNames = new NetworkList<FixedString32Bytes>();
-
-        /*
-        if ( NetworkManager.Singleton)
-        {
-            int count = 1;
-            foreach (var id in NetworkManager.Singleton.ConnectedClientsIds)
-            {
-                ConnectPlayer("Player "+count.ToString(), id);
-                count++;
-            }
-        }*/
+        clientNames = new NetworkList<FixedString128Bytes>();
     }
 
-    private void OnEnable()
+
+
+    private void Start()
     {
-        if (IsServer)
-        {
-            Debug.Log("[Server] UI ON ENABLE");
-        }
+        Debug.Log("[IMPORTANT LOG -------- ]Network spawn");
+        clientIDs.OnListChanged+=UpdateId;
         clientNames.OnListChanged += UpdateName;
+        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnect;
+        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisonnect;
     }
-
     private void OnDisable()
-    {
+    {   
+        clientIDs.OnListChanged-=UpdateId;
         clientNames.OnListChanged -= UpdateName;
-    }
-    public void ConnectPlayer(string playerName, ulong id)
-    {
-        Debug.Log("UI CONNECTING PLAYER STEP 2");
-        if (IsServer)   
+       
+        if (NetworkManager.Singleton)
         {
-            Debug.Log("[ServerRcp] UI CONNECTING PLAYER STEP 4");
-            clientIDs.Add(id);
-            clientNames.Add(playerName); 
-        }
-            
-    }
-
-    public void DisconnectPlayer(ulong id)
-    {
-        Debug.Log("UI REMOVING PLAYER STEP 2");
-        if (IsServer)   
-        {
-            Debug.Log("[ServerRcp] UI REMOVING PLAYER STEP 4");
-            int index = clientIDs.IndexOf(id);
-            clientIDs.RemoveAt(index);
-            clientNames.RemoveAt(index);
+            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnect;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisonnect;
         }
     }
 
-    private void UpdateName(NetworkListEvent<FixedString32Bytes> changeEvent)
+    private void OnDestroy()
     {
+        clientIDs.Dispose();
+        clientNames.Dispose();
+    }
+
+    private void OnClientConnect(ulong clientID)
+    {
+
+        if (NetworkManager.Singleton.IsServer)
+        {
+            Debug.Log("[Server] On client connect call");
+            AddPlayerToList("Player "+clientID.ToString(), clientID);
+        }
         
-        foreach (ulong key in uiPlayers.Keys)
+    }
+
+    private void OnClientDisonnect(ulong clientID)
+    {
+        if (NetworkManager.Singleton.IsServer)
         {
-            Destroy(uiPlayers[key]);
-        }
-        uiPlayers.Clear();
-        uiPlayerTexts.Clear();
-        Debug.Log("NAMES CHANGED UPDATE UI!!");
-        for (int i = 0; i< clientNames.Count; i++)
-        {
-            GameObject obj = Instantiate(prefab, prefabsContainer);
-            uiPlayers.Add(clientIDs[i], obj);
-            TextMeshProUGUI tm = obj.GetComponentInChildren<TextMeshProUGUI>();
-            uiPlayerTexts.Add(clientIDs[i], tm);
-            tm.text = clientNames[i].ToString();
-            Debug.Log("Jugador: "+clientNames[i] + " client id: "+ clientIDs[i]);
+            Debug.Log("[Server] On client disconnect call");
+            RemovePlayerFromList(clientID);
         }
     }
+
+
+    private void UpdateId(NetworkListEvent<ulong> changeEvent)
+    {
+        idsUpdated = true;
+        UpdateList();
+    }
+    private void UpdateName(NetworkListEvent<FixedString128Bytes> changeEvent){
+        namesUpdated = true;
+        UpdateList();
+    }
+    private void UpdateList()
+    {
+        if (idsUpdated && namesUpdated)
+        {
+            foreach(var key in prefInstances.Keys)
+            {
+                Destroy(prefInstances[key]);
+            }
+            prefInstances.Clear();
+            Debug.Log("Update All players");
+            for(int i = 0; i<clientNames.Count; i++)
+            {
+                GameObject obj = Instantiate(prefab, prefabsContainer);
+                TextMeshProUGUI tm = obj.GetComponentInChildren<TextMeshProUGUI>();
+                tm.text = clientNames[i].ToString();
+                prefInstances.Add(clientIDs[i], obj);
+                Debug.Log("client: "+ clientNames[i]);
+            }
+        }
+    }
+
+
+    private void AddPlayerToList(string playerName, ulong id)
+    {
+        clientIDs.Add(id); 
+        clientNames.Add(playerName);//Allways change last
+        idsUpdated = false;
+        namesUpdated = false;
+    }
+
+    private void RemovePlayerFromList(ulong id)
+    {
+        int index  = clientIDs.IndexOf(id);
+        clientIDs.RemoveAt(index); 
+        clientNames.RemoveAt(index);//Allways change last
+        idsUpdated = false;
+        namesUpdated = false;
+    }
+
+
+
 }

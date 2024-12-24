@@ -16,32 +16,28 @@ public class GameManager : NetworkBehaviour
 
     public ulong clientPlayerID = 666666;
 
-    public GameObject playerPrefab;
+    [SerializeField] private GameObject playerPrefab;
 
     private Transform [] playerSpawns;
-
-  
-
 
     private void Awake()
     {
         remainingPlayerIDs = new NetworkList<ulong>();
+        if (instance != null)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        
+
         if (instance == null)
         {
             instance = this;
-            
             DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Debug.Log("Ya existe GM");
-            if (instance.IsServer)
-            {
-                Debug.Log("Reinicia las variables!!!");
-                instance.remainingPlayerIDs.Clear();
-            }
-            instance.players.Clear();           
-            Destroy(gameObject);
         }
     }
 
@@ -52,57 +48,21 @@ public class GameManager : NetworkBehaviour
 
     public void SpawnPlayerSrv(ulong clientId, int spawn_id)
     {
-        // Instanciar el jugador
+        //Instanciar el jugador
         GameObject playerInstance = Instantiate(playerPrefab, playerSpawns[spawn_id].position, Quaternion.identity);
         // Asignar la propiedad NetworkObject al cliente especificado
         playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
     }
-
-    
-
-#region NETWORK_EVENTS
-
     private void OnEnable()
     {
         // Suscribirse al evento que se llama cuando se carga una escena
         SceneManager.sceneLoaded += OnSceneLoaded;
-        if (NetworkManager.Singleton != null)
-        {
-            NetworkManager.Singleton.OnServerStarted += OnServerStarted;
-            NetworkManager.Singleton.OnServerStopped += OnServerStopped;
-            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
-            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
-        }
     }
 
     private void OnDisable()
     {
         // Desuscribirse para evitar errores al destruir el objeto
         SceneManager.sceneLoaded -= OnSceneLoaded;
-
-        if (NetworkManager.Singleton != null)
-        {
-            NetworkManager.Singleton.OnServerStarted -= OnServerStarted;
-            NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnect;
-            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
-            NetworkManager.Singleton.OnServerStopped -= OnServerStopped;
-        }
-    }
-
-    private void OnClientDisconnect(ulong clientID){
-        if (IsServer)
-        {
-            Debug.Log("Cliente "+ clientID + " desconectado.");
-            //SetLooserSrv(clientID);
-        }
-    }
-
-    private void OnServerStarted(){
-        Debug.Log("Servidor iniciado! Gamemanager ");
-    }
-
-    private void OnServerStopped(bool action){
-        Debug.Log("Servidor cerrado " + action);
     }
 
 
@@ -125,34 +85,7 @@ public class GameManager : NetworkBehaviour
             }
             Destroy(gameObject);
         }
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void DisconnectClientServerRpc(ulong clientId)
-    {
-        
-        NetworkManager.Singleton.DisconnectClient(clientId);
-        if (NetworkManager.Singleton.ConnectedClientsIds.Count == 0)
-        {
-            NetworkManager.Singleton.Shutdown();
-        }
-    }
-
-    private void OnClientConnected(ulong clientId)
-    {
-        if (clientId == NetworkManager.Singleton.LocalClientId)
-        {
-            
-            Debug.Log($"Host {clientId} connected to the server.");
-        }
-        else
-        {
-            Debug.Log($"Client {clientId} connected to the server.");
-        }
-    }
-
-#endregion
-
+    }   
     
 
     public void OnSpawnNewPlayer(NetworkPlayerInfo player)
@@ -168,7 +101,8 @@ public class GameManager : NetworkBehaviour
             clientPlayerID = player.OwnerClientId;
         }
 
-        if (IsServer)
+        Debug.Log("Spawn player, is server: "+NetworkManager.Singleton.IsServer+", list:"+remainingPlayerIDs);
+        if (NetworkManager.Singleton.IsServer)
         {
             remainingPlayerIDs.Add(player.OwnerClientId);
         }
@@ -176,6 +110,11 @@ public class GameManager : NetworkBehaviour
 
     public void SetLooserSrv(ulong looserID)
     {
+        Debug.Log("Set looser "+looserID);
+        foreach (var el in remainingPlayerIDs)
+        {
+            Debug.Log("El: "+el);
+        }
         if (remainingPlayerIDs.Contains(looserID))
         {
             Debug.Log("[DebugServer] Player " + players[looserID].name + " lost the game!");
@@ -201,13 +140,17 @@ public class GameManager : NetworkBehaviour
         {
             Debug.Log("[Server] Remaining player: "+p);
         }
+        List<NetworkPlayerInfo> playerCopy = new List<NetworkPlayerInfo>(players.Values);
         OnEndRoundClientRpc(remainingPlayerIDs[0]);
-        StartCoroutine(NextRound());
+        remainingPlayerIDs.Clear();
+        players.Clear();
+        StartCoroutine(NextRound(playerCopy));
     }
 
     [ClientRpc]
     private void OnEndRoundClientRpc(ulong winner)
     {
+        players.Clear();
         Debug.Log("[Client] end round, i am client: "+clientPlayerID+" and winner is "+ winner);
         if (winner == clientPlayerID)
         {
@@ -218,14 +161,14 @@ public class GameManager : NetworkBehaviour
         
     }
 
-    IEnumerator NextRound()
+    IEnumerator NextRound(List<NetworkPlayerInfo> playerCopy)
     {
         if (instance)
         {
             yield return new WaitForSeconds(1);
             
             
-            var playerCopy = new List<NetworkPlayerInfo>(players.Values); 
+            
 
             if (instance.roundsPlayed.Value < instance.numberOfMatches && NetworkManager.Singleton.ConnectedClientsIds.Count > 1)
             {
@@ -257,7 +200,9 @@ public class GameManager : NetworkBehaviour
 
     public void RestartMatch()
     {
-        roundsPlayed.Value = 0;
-
+        if (NetworkManager.Singleton.IsServer)
+        {
+            roundsPlayed.Value = 0;
+        }
     }
 }

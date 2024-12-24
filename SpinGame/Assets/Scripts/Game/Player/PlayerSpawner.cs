@@ -10,7 +10,7 @@ public class PlayerSpawner : NetworkBehaviour
     void Start()
     {
         GameManager.instance.SetSpawns(spawnPoints);
-        if (IsServer)
+        if (NetworkManager.Singleton.IsServer)
         {
             for  (int i = 0; i< NetworkManager.Singleton.ConnectedClientsIds.Count; i++)
             {

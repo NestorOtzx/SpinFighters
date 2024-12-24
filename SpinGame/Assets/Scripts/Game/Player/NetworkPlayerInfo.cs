@@ -7,7 +7,7 @@ using UnityEngine;
 public class NetworkPlayerInfo : NetworkBehaviour
 {
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
         GameManager.instance.OnSpawnNewPlayer(this);
         gameObject.name = "Player "+(OwnerClientId).ToString();
