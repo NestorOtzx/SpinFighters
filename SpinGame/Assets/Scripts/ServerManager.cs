@@ -20,6 +20,12 @@ public class ServerManager : MonoBehaviour
         {
             RunServer();
         }
+#if UNITY_SERVER
+        if (!Application.isEditor)
+        {
+            RunServer();
+        }
+#endif
     }
 
     public void RunServer()
