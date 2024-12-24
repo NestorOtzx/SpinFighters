@@ -58,11 +58,18 @@ public class MatchMaking : ControllerBase
     public IActionResult GetAllMatches()
     {
         try{
+            Console.WriteLine("Getting all matches");
+            foreach(var match in currentSessions)
+            {
+                Console.WriteLine($"matchport:{match.port}");
+            }
+
             string ans = JsonSerializer.Serialize(currentSessions);
             return Ok(ans);
         }catch(Exception e)
         {
-            Console.Write("ERROR AL OBTENER PARTIDAS");
+            Console.WriteLine("ERROR AL OBTENER PARTIDAS");
+            Console.WriteLine(e.Message);
             return StatusCode(500, "{nothing}");
         }
     }
