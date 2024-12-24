@@ -3839,6 +3839,10 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 4142325921
       objectReference: {fileID: 0}
+    - target: {fileID: 3809601007738650858, guid: d037660ec38d9f149809b3a54a83fa73, type: 3}
+      propertyPath: ActiveSceneSynchronization
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3809601007738650859, guid: d037660ec38d9f149809b3a54a83fa73, type: 3}
       propertyPath: m_Name
       value: GameManager

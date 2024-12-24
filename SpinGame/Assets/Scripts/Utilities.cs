@@ -9,6 +9,7 @@ public static class Utilities
         MatchMaking,
         ScoresScreen,
         JoinMatch,
+        FindMatch,
         Level1
         
     }

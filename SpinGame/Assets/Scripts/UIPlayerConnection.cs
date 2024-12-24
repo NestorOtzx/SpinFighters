@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.Collections;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class UIPlayerConnection : NetworkBehaviour
 {
@@ -36,6 +38,25 @@ public class UIPlayerConnection : NetworkBehaviour
         clientNames.OnListChanged += UpdateName;
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnect;
         NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisonnect;
+        if (prefInstances.Count != clientIDs.Count)
+        {
+            idsUpdated = true;
+            namesUpdated = true;
+            UpdateList();
+        }
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        if (NetworkManager.Singleton.IsServer)
+        {
+            foreach(ulong clientid in NetworkManager.Singleton.ConnectedClientsIds){
+                if (!clientIDs.Contains(clientid))
+                {
+                    AddPlayerToList("Player"+clientid.ToString(), clientid);
+                }
+            }
+        }
     }
     private void OnDisable()
     {   
