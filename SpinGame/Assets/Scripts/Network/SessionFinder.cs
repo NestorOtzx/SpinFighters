@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using TMPro;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -23,11 +22,20 @@ public class SessionFinder : MonoBehaviour
     [SerializeField] private GameObject blockPrefab;
 
     [SerializeField] private TMP_InputField serverIp;
-
     List<GameObject> prefInstances = new List<GameObject>();
+    public int currentPort;
+
+    SessionManager manager;
     void Start()
     {
-        FindMatches();
+        manager = FindObjectOfType<SessionManager>();
+        currentPort = -1;
+        //FindMatches();
+    }
+
+    public void ConnectToSelected()
+    {
+        manager.ConnectClientToMatch(serverIp.text, (ushort)currentPort);
     }
 
     public void FindMatches()
@@ -67,7 +75,7 @@ public class SessionFinder : MonoBehaviour
                 {
                     GameObject obj = Instantiate(blockPrefab, blocksContainer);
                     SessionBlock block = obj.GetComponent<SessionBlock>();
-                    block.SetText(s.name, s.port.ToString(), "0/10");
+                    block.SetText(s.name, s.port, "0/10");
                     prefInstances.Add(obj);
                 }
                 Debug.Log("Current matches: "+ jsonResponse);

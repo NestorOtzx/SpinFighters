@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Unity.Netcode;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 
 public class ClientConnectionUI : MonoBehaviour
@@ -17,6 +18,7 @@ public class ClientConnectionUI : MonoBehaviour
         SessionManager session =FindObjectOfType<SessionManager>();
         buttons[0].onClick.AddListener(() => {
             Debug.Log("Clicked Find games");
+            SceneManager.LoadScene(Utilities.SceneNames.FindMatch.ToString());
             });
         buttons[1].onClick.AddListener(() => {
             Debug.Log("Clicked connect player");
