@@ -2,6 +2,10 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Runtime.InteropServices.Marshalling;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using System.Web;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 public class MatchMaking : ControllerBase
 {
     private static HashSet<int> portsUsed = new HashSet<int>();
+    private static List<Session> currentSessions = new List<Session>();
 
     [HttpGet]
     public ContentResult Get()
@@ -49,6 +54,19 @@ public class MatchMaking : ControllerBase
         }
     }
 
+    [HttpGet("GetMatches")]
+    public IActionResult GetAllMatches()
+    {
+        try{
+            string ans = JsonSerializer.Serialize(currentSessions);
+            return Ok(ans);
+        }catch(Exception e)
+        {
+            Console.Write("ERROR AL OBTENER PARTIDAS");
+            return StatusCode(500, "{nothing}");
+        }
+    }
+
     private bool StartDedicatedServer(int port)
     {
         var process = new Process
@@ -79,6 +97,8 @@ public class MatchMaking : ControllerBase
                 Console.WriteLine($"[ERROR] {e.Data}");
             }
         };
+        
+        
 
         Console.WriteLine($"Add port!! {port}");
         portsUsed.Add(port);
@@ -88,7 +108,15 @@ public class MatchMaking : ControllerBase
         }
         bool worked = process.Start();
 
+        Session session = new Session();
+        session.port = port;
+        session.pid = process.Id;
+        session.name = "Game "+port.ToString();
+
+        currentSessions.Add(session);
+        
         process.Exited += (sender, e) => {
+            currentSessions.Remove(session);
             portsUsed.Remove(port);
             Console.WriteLine($"BORRANDO EL PUERTO {port} de la lista!!");
         };
@@ -110,6 +138,9 @@ public class MatchMaking : ControllerBase
                 return port;
             }
         }
+
         throw new Exception("No available ports!!");
     }
+
+
 }
