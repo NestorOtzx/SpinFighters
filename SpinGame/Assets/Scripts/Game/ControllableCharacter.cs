@@ -1,8 +1,9 @@
+using System.Collections;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
-public class NetworkPlayer : NetworkBehaviour
+public class ControllableCharacter : NetworkBehaviour
 {
     [HideInInspector]
     public Rigidbody rb;
@@ -22,57 +23,37 @@ public class NetworkPlayer : NetworkBehaviour
     private float currentJumpForce = 0f; // Fuerza actual cargada
     private bool isCharging = false; // Indicador de si está cargando el salto
 
-    private NetworkVariable<bool> isGrounded = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Owner);
+    protected NetworkVariable<bool> isGrounded = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Owner);
+    protected bool isGroundedSingle = false;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
     }
 
-   
-
-    private void Update()
+    private void Start()
     {
-        if (IsOwner)
+        if (GameManager.instance.isSinglePlayer)
         {
-            HandleJumpInput();
+            rb.isKinematic = false;
         }
     }
 
     private void FixedUpdate()
     {
-        if (IsServer)
+        if (IsServer ||  GameManager.instance.isSinglePlayer)
         {
             CheckGrounded(); // Alternativa para detección precisa
         }
     }
 
-    private void HandleJumpInput()
-    {
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded.Value)
-        {
-            
-            StartCharging();
-        }
-
-        if (Input.GetKey(KeyCode.Space) && isGrounded.Value)
-        {
-            ChargeJumpForce();
-        }
-
-        if (Input.GetKeyUp(KeyCode.Space) && isGrounded.Value)
-        {
-            ReleaseJumpForce();
-        }
-    }
-
-    private void StartCharging()
+    protected void StartCharging()
     {
         isCharging = true;
         currentJumpForce = 0f; // Resetea la fuerza al iniciar la carga
     }
 
-    private void ChargeJumpForce()
+    protected void ChargeJumpForce()
     {
         if (isCharging)
         {
@@ -81,16 +62,21 @@ public class NetworkPlayer : NetworkBehaviour
         }
     }
 
-    private void ReleaseJumpForce()
+    protected void ReleaseJumpForce()
     {
         if (isCharging)
         {
             isCharging = false;
 
-            // Llamar al servidor para aplicar la fuerza
-            ApplyJumpForceServerRpc(currentJumpForce);
-
-            // Resetea la fuerza tras el salto
+            
+            if (GameManager.instance.isSinglePlayer)
+            {
+                ApplyJumpForce(currentJumpForce);
+            }else{
+                ApplyJumpForceServerRpc(currentJumpForce);
+            }
+        
+            // Reset force
             currentJumpForce = 0f;
         }
     }
@@ -103,8 +89,9 @@ public class NetworkPlayer : NetworkBehaviour
 
     private void ApplyJumpForce(float force)
     {
-        if (!IsServer) return;
-
+        Debug.Log("Apply force 1");
+        if (!IsServer && !GameManager.instance.isSinglePlayer) return;
+        Debug.Log("Apply force 2");
         // La dirección hacia donde apunta la cabeza
         Vector3 jumpDirection = headTransform.forward;
 
@@ -115,7 +102,13 @@ public class NetworkPlayer : NetworkBehaviour
         rb.AddForce(forceDirection.normalized * force, ForceMode.Impulse);
 
         // Salto realizado, ya no está tocando el suelo
-        isGrounded.Value = false;
+        if (GameManager.instance.isSinglePlayer)
+        {
+            isGroundedSingle = false;
+        }else{
+            isGrounded.Value = false;    
+        }
+        
     }
 
     private void CheckGrounded()
@@ -124,22 +117,39 @@ public class NetworkPlayer : NetworkBehaviour
         Ray ray = new Ray(transform.position, Vector3.down);
         if (Physics.Raycast(ray, out RaycastHit hit, 1.1f, groundLayer))
         {
-            isGrounded.Value = true;
+            if (GameManager.instance.isSinglePlayer)
+            {
+                isGroundedSingle = true;
+            }else{
+                isGrounded.Value = true;    
+            }
+            
         }
         else
         {
-            isGrounded.Value = false;
+            if (GameManager.instance.isSinglePlayer)
+            {
+                isGroundedSingle = false;
+            }else{
+                isGrounded.Value = false;    
+            }
         }
     }
 
     private void OnCollisionStay(Collision collision)
     {
-        if (IsServer)
+        if (IsServer || GameManager.instance.isSinglePlayer)
         {
             // Verificar si está tocando el suelo usando el LayerMask
             if (((1 << collision.gameObject.layer) & groundLayer) != 0)
             {
-                isGrounded.Value = true;
+                if (GameManager.instance.isSinglePlayer)
+                {
+                    isGroundedSingle = true;
+                }else{
+                    isGrounded.Value = true;    
+                }
+                
             }
         }
     }
@@ -147,12 +157,17 @@ public class NetworkPlayer : NetworkBehaviour
 
     private void OnCollisionExit(Collision collision)
     {
-        if (IsServer)
+        if (IsServer || GameManager.instance.isSinglePlayer)
         {
             // Si deja de tocar el suelo, actualizamos el estado
             if (((1 << collision.gameObject.layer) & groundLayer) != 0)
             {
-                isGrounded.Value = false;
+                if (GameManager.instance.isSinglePlayer)
+                {
+                    isGroundedSingle = false;
+                }else{
+                    isGrounded.Value = false;    
+                }
             }
         }
     }
@@ -160,27 +175,25 @@ public class NetworkPlayer : NetworkBehaviour
     
     private void OnCollisionEnter(Collision collision)
     {
-        if (IsServer)
+        if (IsServer || GameManager.instance.isSinglePlayer)
         {
-            // Verificar si el objeto con el que colisionó es otro jugador
-            NetworkPlayer otherPlayer = collision.gameObject.GetComponent<NetworkPlayer>();
-            if (otherPlayer != null)
+            if (collision.gameObject.layer == 6)
             {
-                ApplyRepulsionForce(otherPlayer);
+                ApplyRepulsionForce(collision.gameObject);
             }
         }
     }
 
-    private void ApplyRepulsionForce(NetworkPlayer otherPlayer)
+    private void ApplyRepulsionForce(GameObject otherPlayer)
     {
+        Debug.Log("REPULSION FORCE");
         // Obtener la dirección de la fuerza de repulsión
         Vector3 repulsionDirection = (otherPlayer.transform.position - transform.position).normalized;
-        repulsionDirection.y = Mathf.Min(repulsionDirection.y, 0);
+        //repulsionDirection.y = Mathf.Max(repulsionDirection.y, 0);
         // Aplicar la fuerza al jugador actual en dirección opuesta
         rb.AddForce(-repulsionDirection * collisionForce, ForceMode.Impulse); // Ajusta la magnitud de la fuerza
-
         // Aplicar la fuerza al otro jugador
-        otherPlayer.rb.AddForce(repulsionDirection * collisionForce, ForceMode.Impulse); // Ajusta la magnitud de la fuerza
+        otherPlayer.GetComponent<Rigidbody>().AddForce(repulsionDirection * collisionForce, ForceMode.Impulse); // Ajusta la magnitud de la fuerza
     }
 
     private void OnDrawGizmos()

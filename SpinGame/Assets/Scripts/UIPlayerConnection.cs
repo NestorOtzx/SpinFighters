@@ -15,10 +15,6 @@ public class UIPlayerConnection : NetworkBehaviour
 
     private NetworkList<ulong> clientIDs;
     private NetworkList<FixedString128Bytes> clientNames;
-
-    private bool idsUpdated = true, namesUpdated = true; 
-
-
     private Dictionary<ulong, GameObject> prefInstances = new Dictionary<ulong, GameObject>();
 
      private void Awake()
@@ -40,8 +36,6 @@ public class UIPlayerConnection : NetworkBehaviour
         NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisonnect;
         if (prefInstances.Count != clientIDs.Count)
         {
-            idsUpdated = true;
-            namesUpdated = true;
             UpdateList();
         }
     }
@@ -78,7 +72,7 @@ public class UIPlayerConnection : NetworkBehaviour
 
     private void OnClientConnect(ulong clientID)
     {
-
+        Debug.Log("Client connected!!");
         if (NetworkManager.Singleton.IsServer)
         {
             Debug.Log("[Server] On client connect call");
@@ -89,6 +83,7 @@ public class UIPlayerConnection : NetworkBehaviour
 
     private void OnClientDisonnect(ulong clientID)
     {
+        Debug.Log("Client disconnected!!");
         if (NetworkManager.Singleton.IsServer)
         {
             Debug.Log("[Server] On client disconnect call");
@@ -99,41 +94,36 @@ public class UIPlayerConnection : NetworkBehaviour
 
     private void UpdateId(NetworkListEvent<ulong> changeEvent)
     {
-        idsUpdated = true;
         UpdateList();
     }
     private void UpdateName(NetworkListEvent<FixedString128Bytes> changeEvent){
-        namesUpdated = true;
         UpdateList();
     }
     private void UpdateList()
     {
-        if (idsUpdated && namesUpdated)
+        Debug.Log("List changed");
+        foreach(var key in prefInstances.Keys)
         {
-            foreach(var key in prefInstances.Keys)
-            {
-                Destroy(prefInstances[key]);
-            }
-            prefInstances.Clear();
-            Debug.Log("Update All players");
-            for(int i = 0; i<clientNames.Count; i++)
-            {
-                GameObject obj = Instantiate(prefab, prefabsContainer);
-                TextMeshProUGUI tm = obj.GetComponentInChildren<TextMeshProUGUI>();
-                tm.text = clientNames[i].ToString();
-                prefInstances.Add(clientIDs[i], obj);
-                Debug.Log("client: "+ clientNames[i]);
-            }
+            Destroy(prefInstances[key]);
+        }
+        prefInstances.Clear();
+        Debug.Log("Update All players");
+        for(int i = 0; i<Mathf.Min(clientNames.Count, clientIDs.Count); i++)
+        {
+            GameObject obj = Instantiate(prefab, prefabsContainer);
+            TextMeshProUGUI tm = obj.GetComponentInChildren<TextMeshProUGUI>();
+            tm.text = clientNames[i].ToString();
+            prefInstances.Add(clientIDs[i], obj);
+            Debug.Log("client: "+ clientNames[i]);
         }
     }
 
 
     private void AddPlayerToList(string playerName, ulong id)
     {
+        
         clientIDs.Add(id); 
         clientNames.Add(playerName);//Allways change last
-        idsUpdated = false;
-        namesUpdated = false;
     }
 
     private void RemovePlayerFromList(ulong id)
@@ -141,8 +131,7 @@ public class UIPlayerConnection : NetworkBehaviour
         int index  = clientIDs.IndexOf(id);
         clientIDs.RemoveAt(index); 
         clientNames.RemoveAt(index);//Allways change last
-        idsUpdated = false;
-        namesUpdated = false;
+        
     }
 
 

@@ -8,7 +8,14 @@ public class PlayAgainButton : NetworkBehaviour
 {
     public void PlayAgain()
     {
-        CallLevelServerRpc();
+        if (GameManager.instance.isSinglePlayer)
+        {
+            Destroy(GameManager.instance.gameObject);
+            GameManager.instance = null;
+            SceneManager.LoadScene(Utilities.SceneNames.SinglePlayer.ToString());    
+        }else{
+            CallLevelServerRpc();
+        }
     }
 
     [ServerRpc(RequireOwnership =false)]

@@ -12,6 +12,10 @@ public class NetworkManagerHandler : MonoBehaviour
         // Verificar si ya existe otro NetworkManager activo
         if (NetworkManager.Singleton != null && NetworkManager.Singleton != this.GetComponent<NetworkManager>() )
         {
+            if (SceneManager.GetActiveScene().name == Utilities.SceneNames.JoinMatch.ToString())
+            {
+                NetworkManager.Singleton.Shutdown();
+            }
             Destroy(gameObject);
         }
         else if (SceneManager.GetActiveScene().name == Utilities.SceneNames.MainMenu.ToString()) //en el main menu no habrá sesiones

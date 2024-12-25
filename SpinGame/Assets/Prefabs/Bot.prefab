@@ -54,7 +54,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0c923a6d8b47f5f4fb3cd4f3e49fd7c8, type: 2}
+  - {fileID: 2100000, guid: 50ec84bb25c06a44aab3959c03ae94ac, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -111,11 +111,11 @@ GameObject:
   - component: {fileID: 445199003905736082}
   - component: {fileID: 5014621218170254636}
   - component: {fileID: 1327091042920346298}
-  - component: {fileID: 1024827467374822751}
   - component: {fileID: 8687822058296837875}
+  - component: {fileID: 5514743124667715284}
   m_Layer: 6
-  m_Name: Player
-  m_TagString: Player
+  m_Name: Bot
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -148,7 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3110366570
+  GlobalObjectIdHash: 3493486855
   InScenePlacedSourceGlobalObjectIdHash: 121359240
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -216,26 +216,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1024827467374822751
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7523972650501600071}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62d12fef099490b4e86d8117f87f0b8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rb: {fileID: 0}
-  headTransform: {fileID: 8259425057165801708}
-  maxJumpForce: 20
-  collisionForce: 10
-  chargeRate: 70
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 8
 --- !u!114 &8687822058296837875
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -249,6 +229,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerID: 0
+--- !u!114 &5514743124667715284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7523972650501600071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80022553ec000a544919781de22b9643, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 0}
+  headTransform: {fileID: 8259425057165801708}
+  maxJumpForce: 20
+  collisionForce: 10
+  chargeRate: 70
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!1 &7576770856821009972
 GameObject:
   m_ObjectHideFlags: 0

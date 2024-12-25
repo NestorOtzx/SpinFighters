@@ -12,8 +12,12 @@ public class StartLevelButton : NetworkBehaviour
     public void TryStartGame()
     {
         Debug.Log("Boton presionado!!!");
-        CallLevelServerRpc();
-        
+        if (GameManager.instance.isSinglePlayer)
+        {
+            SceneManager.LoadScene(scene);
+        }else{
+            CallLevelServerRpc();
+        }
     }
 
     [ServerRpc(RequireOwnership =false)]
