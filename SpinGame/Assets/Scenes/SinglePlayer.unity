@@ -557,7 +557,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3809601008021150845, guid: d037660ec38d9f149809b3a54a83fa73, type: 3}
       propertyPath: botsNumber
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d037660ec38d9f149809b3a54a83fa73, type: 3}

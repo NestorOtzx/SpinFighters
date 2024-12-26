@@ -9,25 +9,28 @@ public class ControllableCharacter : NetworkBehaviour
     public Rigidbody rb;
 
     [SerializeField]
-    private Transform headTransform; // Transform de la "cabeza" del jugador
+    protected Transform headTransform; // Transform de la "cabeza" del jugador
 
     [SerializeField]
-    private float maxJumpForce = 20f; // Fuerza máxima de salto
+    protected float maxJumpForce = 20f; // Fuerza máxima de salto
     [SerializeField]
-    private float collisionForce = 5f; // Fuerza máxima de salto
+    protected float collisionForce = 5f; // Fuerza máxima de salto
     [SerializeField]
-    private float chargeRate = 10f; // Velocidad de carga de la fuerza
+    protected float chargeRate = 10f; // Velocidad de carga de la fuerza
     [SerializeField]
-    private LayerMask groundLayer; // Capa del suelo
+    protected LayerMask groundLayer; // Capa del suelo
 
-    private float currentJumpForce = 0f; // Fuerza actual cargada
-    private bool isCharging = false; // Indicador de si está cargando el salto
+    protected float currentJumpForce = 0f; // Fuerza actual cargada
+    protected bool isCharging = false; // Indicador de si está cargando el salto
 
     protected NetworkVariable<bool> isGrounded = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Owner);
     protected bool isGroundedSingle = false;
 
+    protected PlayerInfo info;
+
     private void Awake()
     {
+        info = GetComponent<PlayerInfo>();
         rb = GetComponent<Rigidbody>();
     }
 
@@ -68,12 +71,17 @@ public class ControllableCharacter : NetworkBehaviour
         {
             isCharging = false;
 
+             Vector3 jumpDirection = headTransform.forward;
+
+            // Agregar componente vertical al salto
+            Vector3 direction = jumpDirection + Vector3.up;
+
             
             if (GameManager.instance.isSinglePlayer)
             {
-                ApplyJumpForce(currentJumpForce);
+                ApplyJumpForce(currentJumpForce, direction);
             }else{
-                ApplyJumpForceServerRpc(currentJumpForce);
+                ApplyJumpForceServerRpc(currentJumpForce,direction);
             }
         
             // Reset force
@@ -82,33 +90,23 @@ public class ControllableCharacter : NetworkBehaviour
     }
 
     [ServerRpc]
-    private void ApplyJumpForceServerRpc(float force)
+    private void ApplyJumpForceServerRpc(float force, Vector3 direction)
     {
-        ApplyJumpForce(force);
+        ApplyJumpForce(force, direction);
     }
 
-    private void ApplyJumpForce(float force)
+    private void ApplyJumpForce(float force, Vector3 direction)
     {
-        Debug.Log("Apply force 1");
         if (!IsServer && !GameManager.instance.isSinglePlayer) return;
-        Debug.Log("Apply force 2");
-        // La dirección hacia donde apunta la cabeza
-        Vector3 jumpDirection = headTransform.forward;
 
-        // Agregar componente vertical al salto
-        Vector3 forceDirection = jumpDirection + Vector3.up;
+        rb.AddForce(direction.normalized * force, ForceMode.Impulse);
 
-        // Aplicar fuerza con la magnitud cargada
-        rb.AddForce(forceDirection.normalized * force, ForceMode.Impulse);
-
-        // Salto realizado, ya no está tocando el suelo
         if (GameManager.instance.isSinglePlayer)
         {
             isGroundedSingle = false;
         }else{
             isGrounded.Value = false;    
         }
-        
     }
 
     private void CheckGrounded()
@@ -188,10 +186,17 @@ public class ControllableCharacter : NetworkBehaviour
     {
         Debug.Log("REPULSION FORCE");
         // Obtener la dirección de la fuerza de repulsión
-        Vector3 repulsionDirection = (otherPlayer.transform.position - transform.position).normalized;
+        Vector3 otherPos = otherPlayer.transform.position;
+        Vector3 myPos = transform.position;
+        myPos.y = 0;
+        otherPos.y = 0;
+        Vector3 repulsionDirection = (otherPos - myPos).normalized;
+        repulsionDirection.y = 0.2f;
+        Vector3 negative = -repulsionDirection;
+        negative.y = 0.2f;
         //repulsionDirection.y = Mathf.Max(repulsionDirection.y, 0);
         // Aplicar la fuerza al jugador actual en dirección opuesta
-        rb.AddForce(-repulsionDirection * collisionForce, ForceMode.Impulse); // Ajusta la magnitud de la fuerza
+        rb.AddForce(negative * collisionForce, ForceMode.Impulse); // Ajusta la magnitud de la fuerza
         // Aplicar la fuerza al otro jugador
         otherPlayer.GetComponent<Rigidbody>().AddForce(repulsionDirection * collisionForce, ForceMode.Impulse); // Ajusta la magnitud de la fuerza
     }

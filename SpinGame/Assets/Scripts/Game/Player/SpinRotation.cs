@@ -1,31 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class SpinRotation : MonoBehaviour
 {
 // Velocidad de rotación en grados por segundo
     public float rotationSpeed = 100f;
-
-    private float timeElapsed = 0;
-    private bool canRotate;
-
-    private float timeStartRotation = 0;
     public void Start()
     {
-        timeStartRotation = Random.Range(0f, 1f);
-        
+        if (GameManager.instance.isSinglePlayer)
+        {
+            transform.rotation = Quaternion.Euler(new Vector3(0, Random.Range(0, 360), 0));   
+        }
+        else if (NetworkManager.Singleton.IsServer)
+        {
+            transform.rotation = Quaternion.Euler(new Vector3(0, Random.Range(0, 360), 0));
+            SetStartRotationClientRpc();
+        }
     }
+
+    [ClientRpc]
+    private void SetStartRotationClientRpc()
+    {
+        transform.rotation = Quaternion.Euler(new Vector3(0, Random.Range(0, 360), 0));
+    }
+
+
 
     void Update()
     {
-        if (timeElapsed > timeStartRotation)
-        {
-            float rotationAngle = rotationSpeed * Time.deltaTime;
-            transform.Rotate(0, rotationAngle, 0);
-        }else{
-            timeElapsed+=Time.deltaTime;
-        }
+        float rotationAngle = rotationSpeed * Time.deltaTime;
+        transform.Rotate(0, rotationAngle, 0);
         
     }
 }

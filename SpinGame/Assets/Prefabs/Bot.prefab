@@ -244,11 +244,13 @@ MonoBehaviour:
   rb: {fileID: 0}
   headTransform: {fileID: 8259425057165801708}
   maxJumpForce: 20
-  collisionForce: 10
+  collisionForce: 8
   chargeRate: 70
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
+  mode: 1
+  isPointingTolerance: 0.6
 --- !u!1 &7576770856821009972
 GameObject:
   m_ObjectHideFlags: 0
