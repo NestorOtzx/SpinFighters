@@ -6,8 +6,9 @@ using UnityEngine.SceneManagement;
 using Unity.Netcode.Transports.UTP;
 using System.Net;
 using System.Linq;
-using System;
+using System.Text;
 using UnityEngine.Networking;
+using Newtonsoft.Json;
 public class SessionManager : NetworkBehaviour
 {
     struct CreateMatchData{
@@ -85,18 +86,30 @@ public class SessionManager : NetworkBehaviour
     }
 
     
-    public void ConnectClientToMatch(string ip, ushort port)
+    public void ConnectClientToMatch(string ip, ushort port, string _username)
     {
+        var connectionData = new {
+            username = _username,
+            skinid = 1
+            };
+        
+        string jsonData = JsonConvert.SerializeObject(connectionData);
+
+        Debug.Log("DATA IN JSON: "+jsonData);
+        byte[] payload = Encoding.UTF8.GetBytes(jsonData);
+
+        NetworkManager.Singleton.NetworkConfig.ConnectionData = payload;
+
         ConfigureTransport(ip, port);
         NetworkManager.Singleton.StartClient();
     }
 
-    public void CreateMatch(string ip)
+    public void CreateMatch(string ip, string username)
     {
-        StartCoroutine(CreateMatchCoroutine(ip));
+        StartCoroutine(CreateMatchCoroutine(ip, username));
     }
 
-    IEnumerator CreateMatchCoroutine(string ip)
+    IEnumerator CreateMatchCoroutine(string ip, string username)
     {
         string url = "http://"+ip+":5100/MatchMaking/CreateMatch";
         Debug.Log(url);
@@ -118,8 +131,7 @@ public class SessionManager : NetworkBehaviour
                 string jsonResponse = webRequest.downloadHandler.text;
                 Debug.Log($"Respuesta JSON: {jsonResponse}");
                 CreateMatchData data = JsonUtility.FromJson<CreateMatchData>(jsonResponse);
-                ConfigureTransport(ip, (ushort)data.port);
-                NetworkManager.Singleton.StartClient();
+                ConnectClientToMatch(ip, (ushort)data.port, username);
             }
         }
     }

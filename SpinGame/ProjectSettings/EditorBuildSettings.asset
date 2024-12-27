@@ -24,6 +24,15 @@ EditorBuildSettings:
     path: Assets/Scenes/FindMatch.unity
     guid: bb033d1eb810ea44ba1da4f57f223211
   - enabled: 1
-    path: Assets/Scenes/Levels/Level1.unity
+    path: Assets/Scenes/Levels/Volcano.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/Levels/Mountain.unity
+    guid: 2ffe06f0119b95b44be6694a92333865
+  - enabled: 1
+    path: Assets/Scenes/Levels/Beach.unity
+    guid: 99b69d4fb7280fc40900ef71ace3fe8e
+  - enabled: 1
+    path: Assets/Scenes/Levels/Swamp.unity
+    guid: decb8cd848bc9794baf7a1ef2c0079a0
   m_configObjects: {}

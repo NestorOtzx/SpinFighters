@@ -12,6 +12,7 @@ public class ClientConnectionUI : MonoBehaviour
     [SerializeField] private Button [] buttons;
     [SerializeField] private TMP_InputField ipInput;
     [SerializeField] private TMP_InputField portInput;
+    [SerializeField] private TMP_InputField usernameInput;
     
     private void Start()
     {
@@ -22,11 +23,11 @@ public class ClientConnectionUI : MonoBehaviour
             });
         buttons[1].onClick.AddListener(() => {
             Debug.Log("Clicked connect player");
-            session.ConnectClientToMatch(ipInput.text,  ushort.Parse(portInput.text));
+            session.ConnectClientToMatch(ipInput.text,  ushort.Parse(portInput.text), usernameInput.text);
             });
         buttons[2].onClick.AddListener(() => {
             Debug.Log("Clicked create match");
-            session.CreateMatch(ipInput.text);
+            session.CreateMatch(ipInput.text, usernameInput.text);
             });
     }
 }

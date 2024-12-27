@@ -9,25 +9,35 @@ public class StartLevelButton : NetworkBehaviour
     [SerializeField] private string scene;
     [SerializeField] private int minimumPlayers = 2;
 
+    public void SetScene(string scene)
+    {
+        this.scene = scene;
+    }
+
     public void TryStartGame()
     {
         Debug.Log("Boton presionado!!!");
         if (GameManager.instance.isSinglePlayer)
         {
-            SceneManager.LoadScene(scene);
+            try{
+                SceneManager.LoadScene(scene);
+            }catch{
+                Debug.Log("No ha seleccionado escena");
+            }
+            
         }else{
-            CallLevelServerRpc();
+            CallLevelServerRpc(scene);
         }
     }
 
     [ServerRpc(RequireOwnership =false)]
-    public void CallLevelServerRpc()
+    public void CallLevelServerRpc(string requestScene)
     {
         Debug.Log("Server RPC 1 clients: " + NetworkManager.Singleton.ConnectedClientsIds.Count);
         if (NetworkManager.Singleton.ConnectedClientsIds.Count >= minimumPlayers)
         {
             Debug.Log("Server RPC 2");
-            NetworkManager.Singleton.SceneManager.LoadScene(scene, LoadSceneMode.Single);
+            NetworkManager.Singleton.SceneManager.LoadScene(requestScene, LoadSceneMode.Single);
         }else{
             //handle error
         }

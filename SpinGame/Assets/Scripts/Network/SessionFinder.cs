@@ -22,6 +22,7 @@ public class SessionFinder : MonoBehaviour
     [SerializeField] private GameObject blockPrefab;
 
     [SerializeField] private TMP_InputField serverIp;
+    [SerializeField] private TMP_InputField username;
     List<GameObject> prefInstances = new List<GameObject>();
     public int currentPort;
 
@@ -35,7 +36,7 @@ public class SessionFinder : MonoBehaviour
 
     public void ConnectToSelected()
     {
-        manager.ConnectClientToMatch(serverIp.text, (ushort)currentPort);
+        manager.ConnectClientToMatch(serverIp.text, (ushort)currentPort, username.text);
     }
 
     public void FindMatches()

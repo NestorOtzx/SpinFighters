@@ -12,7 +12,7 @@ public class GameManager : NetworkBehaviour
     public Dictionary<ulong, PlayerInfo> players = new Dictionary<ulong, PlayerInfo>();
     public NetworkList<ulong> remainingPlayerIDs;
     public List<ulong> remainingPlayersSingle;
-    public int numberOfMatches = 3;
+    public int numberOfRounds = 3;
     private NetworkVariable<int> roundsPlayed = new NetworkVariable<int>(0);
 
     public ulong clientPlayerID = 666666;
@@ -237,7 +237,7 @@ public class GameManager : NetworkBehaviour
         {
             yield return new WaitForSeconds(1);
 
-            if (instance.roundsPlayed.Value < instance.numberOfMatches && (isSinglePlayer || NetworkManager.Singleton.ConnectedClientsIds.Count > 1))
+            if (instance.roundsPlayed.Value < instance.numberOfRounds && (isSinglePlayer || NetworkManager.Singleton.ConnectedClientsIds.Count > 1))
             {
                 instance.LoadGameScene(SceneManager.GetActiveScene().name);
             }else{
@@ -291,6 +291,56 @@ public class GameManager : NetworkBehaviour
             if (clientCount == 0){
                 Application.Quit(); //close server due to there is no players using it :)
             }
+        }else if (clientId == NetworkManager.Singleton.LocalClientId)
+        {
+            Debug.Log("[Client] Disconnected from server");
+            SceneManager.LoadScene(Utilities.SceneNames.JoinMatch.ToString());
         }
+    }
+
+    public void SetNumberOfRounds(int value)
+    {
+        if (isSinglePlayer)
+        {
+            instance.numberOfRounds = value;
+        }else{
+            SetNumberOfRoundsServerRpc(value);
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetNumberOfRoundsServerRpc(int value)
+    {
+        instance.numberOfRounds = value;
+        SetNumberOfRoundsClientRpc(value);
+    }
+
+    [ClientRpc]
+    private void SetNumberOfRoundsClientRpc(int value)
+    {
+        instance.numberOfRounds = value;
+    }
+
+    public void SetNumberOfBots(uint value)
+    {
+        if (isSinglePlayer)
+        {
+            instance.botsNumber = value;
+        }else{
+            SetNumberOfBotsServerRpc(value);
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetNumberOfBotsServerRpc(uint value)
+    {
+        instance.botsNumber = value;
+        SetNumberOfBotsClientRpc(value);
+    }
+
+    [ClientRpc]
+    private void SetNumberOfBotsClientRpc(uint value)
+    {
+        instance.botsNumber = value;
     }
 }

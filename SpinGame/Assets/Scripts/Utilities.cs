@@ -10,7 +10,10 @@ public static class Utilities
         ScoresScreen,
         JoinMatch,
         FindMatch,
-        Level1
+        Volcano,
+        Beach,
+        Mountain,
+        Swamp
         
     }
     
