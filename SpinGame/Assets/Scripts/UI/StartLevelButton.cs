@@ -17,14 +17,9 @@ public class StartLevelButton : NetworkBehaviour
     public void TryStartGame()
     {
         Debug.Log("Boton presionado!!!");
-        if (GameManager.instance.isSinglePlayer)
+        if (GameManager.instance.isSinglePlayer && PlayerConnection.instance.clientInfoSingle.Count > 1)
         {
-            try{
-                SceneManager.LoadScene(scene);
-            }catch{
-                Debug.Log("No ha seleccionado escena");
-            }
-            
+            SceneManager.LoadScene(scene);
         }else{
             CallLevelServerRpc(scene);
         }

@@ -8,12 +8,16 @@ public struct ConnectionData : INetworkSerializable, IEquatable<ConnectionData>
     public ulong clientID;
     public FixedString32Bytes username;
     public int skinId;
+    public int score;
+    public bool isHost;
 
     public ConnectionData(ulong id, FixedString32Bytes name, int skinid)
     {
         clientID = id;
         username = name;
         skinId = skinid;
+        score = 0;
+        isHost = false;
     }
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
@@ -21,6 +25,8 @@ public struct ConnectionData : INetworkSerializable, IEquatable<ConnectionData>
         serializer.SerializeValue(ref clientID);
         serializer.SerializeValue(ref username);
         serializer.SerializeValue(ref skinId);
+        serializer.SerializeValue(ref score);
+        serializer.SerializeValue(ref isHost);
     }
 
     // Método requerido por IEquatable<T>
@@ -32,7 +38,7 @@ public struct ConnectionData : INetworkSerializable, IEquatable<ConnectionData>
     // Sobrescribir GetHashCode para consistencia
     public override int GetHashCode()
     {
-        return HashCode.Combine(clientID, username, skinId);
+        return HashCode.Combine(clientID, username, skinId,score, isHost);
     }
 
     // Sobrescribir Equals para compatibilidad con object

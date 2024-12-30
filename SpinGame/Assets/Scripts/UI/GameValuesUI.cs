@@ -10,15 +10,13 @@ public class GameValuesUI : MonoBehaviour
     [SerializeField] TextMeshProUGUI roundsText;
 
     [SerializeField] Button increaseBots, decreaseBots;
-    [SerializeField] TextMeshProUGUI botsText;
 
     private void Start()
     {
         roundsText.text = GameManager.instance.numberOfRounds.ToString();
-        increaseRounds.onClick.AddListener(() => AddRounds(2));
-        decreaseRounds.onClick.AddListener(() => AddRounds(-2));
+        increaseRounds.onClick.AddListener(() => AddRounds(1));
+        decreaseRounds.onClick.AddListener(() => AddRounds(-1));
 
-        botsText.text = GameManager.instance.numberOfRounds.ToString();
         increaseBots.onClick.AddListener(() => AddBots(1));
         decreaseBots.onClick.AddListener(() => AddBots(-1));
     }
@@ -26,7 +24,6 @@ public class GameValuesUI : MonoBehaviour
     private void FixedUpdate()
     {
         roundsText.text = GameManager.instance.numberOfRounds.ToString();
-        botsText.text = GameManager.instance.botsNumber.ToString();
     }
 
     public void AddRounds(int value)
@@ -39,9 +36,16 @@ public class GameValuesUI : MonoBehaviour
 
     public void AddBots(int value)
     {
-        int newValue = (int)GameManager.instance.botsNumber+value;
+        int clientsCount = PlayerConnection.instance.clientInfoSingle.Count;
+        int newValue = (int)clientsCount+value;
         if (newValue > 0 && newValue < 8){
-            GameManager.instance.SetNumberOfBots((uint)newValue);
+        
+            if (value > 0)
+            {
+                PlayerConnection.instance.ConnectSinglePlayer("Bot "+clientsCount.ToString(), 0, false);
+            }else{  
+                PlayerConnection.instance.DisconnectSinglePlayer((ulong)(clientsCount-1));
+            }
             
         }
     }

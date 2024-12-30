@@ -11,9 +11,11 @@ public class GameManager : NetworkBehaviour
 
     public Dictionary<ulong, PlayerInfo> players = new Dictionary<ulong, PlayerInfo>();
     public NetworkList<ulong> remainingPlayerIDs;
+
     public List<ulong> remainingPlayersSingle;
     public int numberOfRounds = 3;
     private NetworkVariable<int> roundsPlayed = new NetworkVariable<int>(0);
+    private int roundsPlayedSingle;
 
     public ulong clientPlayerID = 666666;
 
@@ -23,8 +25,6 @@ public class GameManager : NetworkBehaviour
     private Transform [] playerSpawns;
 
     public bool isSinglePlayer;
-
-    public uint botsNumber = 1;
 
     private void Awake()
     {
@@ -66,15 +66,15 @@ public class GameManager : NetworkBehaviour
 
     public void SpawnSinglePlayer()
     {
-        //Instantiate player
         GameObject playerInstance = Instantiate(playerPrefab, playerSpawns[0].position, Quaternion.identity);
+        playerInstance.GetComponent<PlayerInfo>().SetId(0);
         
         //Instantiate bots
-        for(int i=0; i<Mathf.Min(botsNumber, playerSpawns.Length-1); i++)
+        for(int i=1; i<Mathf.Min(PlayerConnection.instance.clientInfoSingle.Count, playerSpawns.Length); i++)
         {
-            Instantiate(botPrefab, playerSpawns[i+1].position, Quaternion.identity);
+            GameObject obj = Instantiate(botPrefab, playerSpawns[i].position, Quaternion.identity);
+            obj.GetComponent<PlayerInfo>().SetId(PlayerConnection.instance.clientInfoSingle[i].clientID);
         }
-
     }
 
     private void OnEnable()
@@ -115,8 +115,11 @@ public class GameManager : NetworkBehaviour
         }
         if (scene.name == Utilities.SceneNames.SinglePlayer.ToString())
         {
+            Debug.Log("[GameManager] Scene loaded");
             isSinglePlayer = true;
-             if (instance == null)
+            PlayerConnection.instance.ConnectSinglePlayer("Player", 0, true);
+            
+            if (instance == null)
             {
                 instance = this;
                 DontDestroyOnLoad(gameObject);
@@ -127,7 +130,7 @@ public class GameManager : NetworkBehaviour
 
     public void OnSpawnNewPlayer(PlayerInfo player)
     {
-        Debug.Log("Spawn player, is owner: "+player.IsOwner+", current players:");
+        Debug.Log("Spawn player, is owner: "+player.IsOwner+", playerid:"+player.playerID);
         players.Add(player.playerID, player);
         if (isSinglePlayer && player.gameObject.CompareTag("Player")) 
         {
@@ -190,19 +193,19 @@ public class GameManager : NetworkBehaviour
     }
 
     private void OnEndRound()
-    {
-        roundsPlayed.Value+=1;
-        Debug.Log("[Server] End round "+ (roundsPlayed.Value));
-        foreach(var p in remainingPlayerIDs)
-        {
-            Debug.Log("[Server] Remaining player: "+p);
-        }
-        List<PlayerInfo> playerCopy = new List<PlayerInfo>(players.Values);
+    {   
+        List<PlayerInfo> playerCopy;
         if (isSinglePlayer)
         {
+            roundsPlayedSingle += 1;
+            playerCopy = new List<PlayerInfo>(players.Values);
+            PlayerConnection.instance.AddScore(remainingPlayersSingle[0]); 
             ShowGameWinner(remainingPlayersSingle[0]);
             remainingPlayersSingle.Clear();
         }else{
+            roundsPlayed.Value+=1;
+            playerCopy = new List<PlayerInfo>(players.Values);
+            PlayerConnection.instance.AddScore(remainingPlayerIDs[0]); 
             OnEndRoundClientRpc(remainingPlayerIDs[0]);
             remainingPlayerIDs.Clear();
         }
@@ -228,7 +231,12 @@ public class GameManager : NetworkBehaviour
         }else{
             UIManager.instance.SetLoose(true);
         }
-        
+    }
+
+    [ClientRpc]
+    private void SetDrawUIClientRpc()
+    {
+        UIManager.instance.SetDraw();
     }
 
     IEnumerator NextRound(List<PlayerInfo> playerCopy)
@@ -237,11 +245,30 @@ public class GameManager : NetworkBehaviour
         {
             yield return new WaitForSeconds(1);
 
-            if (instance.roundsPlayed.Value < instance.numberOfRounds && (isSinglePlayer || NetworkManager.Singleton.ConnectedClientsIds.Count > 1))
+            int rp;
+            if (isSinglePlayer)
+            {
+                rp = roundsPlayedSingle;
+            }else{
+                rp = roundsPlayed.Value;
+            }
+            if (rp < instance.numberOfRounds && (isSinglePlayer || NetworkManager.Singleton.ConnectedClientsIds.Count > 1))
             {
                 instance.LoadGameScene(SceneManager.GetActiveScene().name);
             }else{
-                instance.LoadGameScene(Utilities.SceneNames.ScoresScreen.ToString());
+                if (PlayerConnection.instance.CheckDraw())
+                {
+                    if (isSinglePlayer)
+                    {
+                        UIManager.instance.SetDraw();
+                    }else{
+                        SetDrawUIClientRpc();
+                    }
+                    yield return new WaitForSeconds(1);
+                    instance.LoadGameScene(SceneManager.GetActiveScene().name);
+                }else{
+                    instance.LoadGameScene(Utilities.SceneNames.ScoresScreen.ToString());
+                }
             }
 
             foreach (var p in playerCopy)
@@ -270,7 +297,11 @@ public class GameManager : NetworkBehaviour
 
     public void RestartMatch()
     {
-        if (NetworkManager.Singleton.IsServer)
+        if (isSinglePlayer)
+        {
+            roundsPlayedSingle = 0;
+        }
+        else if (NetworkManager.Singleton.IsServer)
         {
             roundsPlayed.Value = 0;
         }
@@ -319,28 +350,5 @@ public class GameManager : NetworkBehaviour
     private void SetNumberOfRoundsClientRpc(int value)
     {
         instance.numberOfRounds = value;
-    }
-
-    public void SetNumberOfBots(uint value)
-    {
-        if (isSinglePlayer)
-        {
-            instance.botsNumber = value;
-        }else{
-            SetNumberOfBotsServerRpc(value);
-        }
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void SetNumberOfBotsServerRpc(uint value)
-    {
-        instance.botsNumber = value;
-        SetNumberOfBotsClientRpc(value);
-    }
-
-    [ClientRpc]
-    private void SetNumberOfBotsClientRpc(uint value)
-    {
-        instance.botsNumber = value;
     }
 }

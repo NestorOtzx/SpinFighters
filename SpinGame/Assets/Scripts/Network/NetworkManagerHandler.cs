@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -17,13 +18,26 @@ public class NetworkManagerHandler : MonoBehaviour
                 NetworkManager.Singleton.Shutdown();
             }
             Destroy(gameObject);
+        }else{
+            DontDestroyOnLoad(gameObject);
         }
-        else if (SceneManager.GetActiveScene().name == Utilities.SceneNames.MainMenu.ToString()) //en el main menu no habrá sesiones
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+    {
+        if (SceneManager.GetActiveScene().name == Utilities.SceneNames.MainMenu.ToString()) //en el main menu no habrá sesiones
         {
             Destroy(gameObject);
-        }
-        else{
-            DontDestroyOnLoad(gameObject);
         }
     }
 }

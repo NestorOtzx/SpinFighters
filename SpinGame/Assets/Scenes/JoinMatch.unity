@@ -2134,11 +2134,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11401706, guid: e0aeafd6ca709b5449035c42f4e3879e, type: 3}
       propertyPath: Width
-      value: 1
+      value: 0.408
       objectReference: {fileID: 0}
     - target: {fileID: 11401706, guid: e0aeafd6ca709b5449035c42f4e3879e, type: 3}
       propertyPath: Height
-      value: 1
+      value: 0.439
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e0aeafd6ca709b5449035c42f4e3879e, type: 3}

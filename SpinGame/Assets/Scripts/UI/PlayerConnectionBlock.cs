@@ -5,12 +5,17 @@ using UnityEngine;
 
 public class PlayerConnectionBlock : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI username;
+    [SerializeField] private TextMeshProUGUI username, hostText, score;
 
-    public void SetValues(string username)
+    public void SetScore(bool b)
     {
-        this.username.text = username;
+        score.gameObject.SetActive(b);
     }
 
-
+    public void SetValues(string username, bool isHost, int score)
+    {
+        this.username.text = username;
+        this.hostText.gameObject.SetActive(isHost);
+        this.score.text = "Score: "+score.ToString();
+    }
 }

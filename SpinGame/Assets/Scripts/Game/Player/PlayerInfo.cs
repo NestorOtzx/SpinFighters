@@ -12,10 +12,15 @@ public class PlayerInfo : NetworkBehaviour
     {
         if (GameManager.instance.isSinglePlayer)
         {
-            playerID = (ulong)GameManager.instance.remainingPlayersSingle.Count;
-            gameObject.name = "Player "+(playerID).ToString();
             GameManager.instance.OnSpawnNewPlayer(this);
         }
+    }
+
+    public void SetId(ulong id) //For single player only
+    {
+        Debug.Log("Setting id!!!"+id);
+        playerID = id;
+        gameObject.name = "Player "+(playerID).ToString();
     }
 
     public override void OnNetworkSpawn()

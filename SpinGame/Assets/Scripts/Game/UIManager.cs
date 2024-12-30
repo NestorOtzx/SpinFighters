@@ -6,7 +6,7 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
     // Start is called before the first frame update
-    [SerializeField] private GameObject winPanel, loosePanel;
+    [SerializeField] private GameObject winPanel, loosePanel, drawPanel;
 
     private void Awake(){
         instance = this;
@@ -18,5 +18,12 @@ public class UIManager : MonoBehaviour
 
     public void SetLoose(bool loose){
         loosePanel.SetActive(loose);
+    }
+
+    public void SetDraw()
+    {
+        SetWin(false);
+        SetLoose(false);
+        drawPanel.SetActive(true);
     }
 }

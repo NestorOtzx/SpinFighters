@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ControllableCharacter : NetworkBehaviour
@@ -98,6 +99,7 @@ public class ControllableCharacter : NetworkBehaviour
     private void ApplyJumpForce(float force, Vector3 direction)
     {
         if (!IsServer && !GameManager.instance.isSinglePlayer) return;
+        if (!IsPlayable()) return;
 
         rb.AddForce(direction.normalized * force, ForceMode.Impulse);
 
@@ -199,6 +201,24 @@ public class ControllableCharacter : NetworkBehaviour
         rb.AddForce(negative * collisionForce, ForceMode.Impulse); // Ajusta la magnitud de la fuerza
         // Aplicar la fuerza al otro jugador
         otherPlayer.GetComponent<Rigidbody>().AddForce(repulsionDirection * collisionForce, ForceMode.Impulse); // Ajusta la magnitud de la fuerza
+    }
+
+    private bool IsPlayable()
+    {
+        if (GameManager.instance.isSinglePlayer)
+        {
+            if (!GameManager.instance.remainingPlayersSingle.Contains(info.playerID))
+            {
+                return false;
+            }
+        }else if (NetworkManager.Singleton.IsServer)
+        {
+            if (!GameManager.instance.remainingPlayerIDs.Contains(info.playerID))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void OnDrawGizmos()
