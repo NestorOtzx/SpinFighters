@@ -14,11 +14,13 @@ Shader "Custom/MovingTexture"
 
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Transparent" "Queue"="Transparent" }
         LOD 200
 
+        Blend SrcAlpha OneMinusSrcAlpha
+
         CGPROGRAM
-        #pragma surface surf Standard fullforwardshadows
+        #pragma surface surf Standard alpha fullforwardshadows
         #pragma target 3.0
 
         sampler2D _MainTex;
@@ -57,9 +59,12 @@ Shader "Custom/MovingTexture"
             // Use user-defined Metallic and Smoothness
             o.Metallic = _Metallic;
             o.Smoothness = _Smoothness;
+
+            // Output alpha
+            o.Alpha = c.a;
         }
         ENDCG
     }
 
-    FallBack "Diffuse"
+    FallBack "Transparent"
 }

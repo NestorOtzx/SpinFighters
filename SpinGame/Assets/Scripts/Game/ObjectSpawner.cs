@@ -24,13 +24,10 @@ public class ObjectSpawner : NetworkBehaviour
 
     private void SpawnObject()
     {
-        Vector3 randomPosition = GetRandomPositionWithinRadius();
+        
         if (!GameManager.instance || GameManager.instance.isSinglePlayer)
         {
-            int objId = Random.Range(0, objectsToSpawn.Length);
-            Debug.Log(objId);
-            var obj = Instantiate(objectsToSpawn[objId], randomPosition, Quaternion.identity);
-            obj.transform.localScale = Vector3.one*Random.Range(0.5f, 2f)*100;
+            var obj = SpawnRandomObject();
             Rigidbody rb = obj.GetComponent<Rigidbody>();
             if (rb)
             {
@@ -39,7 +36,8 @@ public class ObjectSpawner : NetworkBehaviour
         }
         else if (IsServer)
         {
-            SpawnObjectServerRpc(randomPosition);
+            var obj = SpawnRandomObject();
+            obj.GetComponent<NetworkObject>().Spawn(true);
         }
     }
 
@@ -49,11 +47,13 @@ public class ObjectSpawner : NetworkBehaviour
         return new Vector3(randomPoint.x, transform.position.y, randomPoint.y);
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void SpawnObjectServerRpc(Vector3 position)
+    private GameObject SpawnRandomObject()
     {
-        GameObject spawnedObject = Instantiate(objectsToSpawn[Random.Range(0, objectsToSpawn.Length)], position, Quaternion.identity);
-        spawnedObject.transform.localScale = Vector3.one*Random.Range(0.5f, 2f)*100;
-        spawnedObject.GetComponent<NetworkObject>().Spawn();
+        Vector3 randomPosition = GetRandomPositionWithinRadius();
+        int objId = Random.Range(0, objectsToSpawn.Length);
+        Debug.Log("Spawn! objid: "+objId);
+        var obj = Instantiate(objectsToSpawn[objId], randomPosition, Quaternion.identity);
+        obj.transform.localScale = Vector3.one*Random.Range(0.5f, 2f)*100;
+        return obj;
     }
 }
