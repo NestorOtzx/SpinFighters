@@ -13,10 +13,6 @@ public class SnowBall : NetworkBehaviour
     {
         rb = GetComponent<Rigidbody>();
         initialScale = transform.localScale;
-        if (!GameManager.instance || GameManager.instance.isSinglePlayer)
-        {
-            rb.isKinematic = false;
-        }
     }
 
     void FixedUpdate()
