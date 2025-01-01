@@ -26,6 +26,8 @@ public class GameManager : NetworkBehaviour
 
     public bool isSinglePlayer;
 
+    public event Action<ulong> OnPlayerLost;
+
     private void Awake()
     {
         remainingPlayerIDs = new NetworkList<ulong>();
@@ -151,11 +153,18 @@ public class GameManager : NetworkBehaviour
         }
     }    
 
+    [ClientRpc]
+    private void OnPlayerLostClientRpc(ulong looserID)
+    {
+        OnPlayerLost?.Invoke(looserID);
+    }
     public void SetLooserSrv(ulong looserID)
     {
         Debug.Log("Set looser "+looserID);
+        
         if (isSinglePlayer)
         {
+            OnPlayerLost?.Invoke(looserID);
             foreach (var el in remainingPlayersSingle)
             {
                 Debug.Log("remaining player: "+el);
@@ -169,7 +178,9 @@ public class GameManager : NetworkBehaviour
                     OnEndRound();
                 }
             }
-        }else{
+        }else if (NetworkManager.Singleton.IsServer) {
+            OnPlayerLost?.Invoke(looserID);
+            OnPlayerLostClientRpc(looserID);
             foreach (var el in remainingPlayerIDs)
             {
                 Debug.Log("remaining player: "+el);

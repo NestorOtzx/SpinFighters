@@ -38,7 +38,7 @@ public class GameValuesUI : MonoBehaviour
     {
         int clientsCount = PlayerConnection.instance.clientInfoSingle.Count;
         int newValue = (int)clientsCount+value;
-        if (newValue > 0 && newValue < 8){
+        if (newValue > 0 && newValue <= 8){
         
             if (value > 0)
             {

@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 82ecd780727fd5a409a84e8853e0feb6
   - enabled: 1
+    path: Assets/Scenes/Credits.unity
+    guid: 7d98e609e7965374d849dbda3e161535
+  - enabled: 1
     path: Assets/Scenes/SinglePlayer.unity
     guid: d560d4c8204486f4cab291e8ecd5769a
   - enabled: 1
@@ -32,7 +35,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Levels/Beach.unity
     guid: 99b69d4fb7280fc40900ef71ace3fe8e
-  - enabled: 1
-    path: Assets/Scenes/Levels/Swamp.unity
-    guid: decb8cd848bc9794baf7a1ef2c0079a0
   m_configObjects: {}

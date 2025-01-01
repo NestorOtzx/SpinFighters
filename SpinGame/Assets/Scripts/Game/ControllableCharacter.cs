@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
+
+using System;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class ControllableCharacter : NetworkBehaviour
@@ -175,9 +174,11 @@ public class ControllableCharacter : NetworkBehaviour
     
     private void OnCollisionEnter(Collision collision)
     {
-        if (IsServer || GameManager.instance.isSinglePlayer)
+        if (collision.gameObject.layer == 6)
         {
-            if (collision.gameObject.layer == 6)
+            
+
+            if (IsServer || GameManager.instance.isSinglePlayer)
             {
                 ApplyRepulsionForce(collision.gameObject);
             }
