@@ -17,11 +17,6 @@ public class UIFollowTarget : MonoBehaviour
     {
         rectTransform = GetComponent<RectTransform>();
         canvas = GetComponentInParent<Canvas>();
-
-        if (canvas == null)
-        {
-            Debug.LogError("Este script requiere que el elemento esté dentro de un Canvas.");
-        }
     }
 
     private void LateUpdate()

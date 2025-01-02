@@ -106,10 +106,9 @@ public class Bot : ControllableCharacter
         directionToEnemy.y = 0;
         Vector3 currentDir = headTransform.forward;
         currentDir.y = 0;
-        // Producto punto entre el forward de A y el vector hacia B
+        
         float dotProduct = Vector3.Dot(currentDir, directionToEnemy);
 
-        // Comprueba si el producto punto es mayor que el umbral
         return 1-dotProduct < isPointingTolerance;
     }
 }

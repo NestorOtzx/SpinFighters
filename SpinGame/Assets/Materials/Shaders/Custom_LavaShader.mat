@@ -32,7 +32,7 @@ Material:
     m_Floats:
     - _Distortion: 0.2
     - _Metallic: 0
-    - _Offset: 0
+    - _Offset: 0.059841618
     - _Smoothness: 0
     - _Speed: 4.46
     m_Colors:

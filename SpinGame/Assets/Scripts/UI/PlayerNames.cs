@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerNames : MonoBehaviour
@@ -30,34 +31,40 @@ public class PlayerNames : MonoBehaviour
             foreach(var info in PlayerConnection.instance.clientInfoSingle )
             {   
                 Debug.Log("Setting name "+info.username);
-                GameObject obj = Instantiate(playerNamePref, transform); 
-                PlayerNameUI playerNameUI = obj.GetComponent<PlayerNameUI>();
-                playerNameUI.SetTarget(GameManager.instance.players[info.clientID].transform);
-                playerNameUI.SetName(info.username.ToString());
-                if (info.clientID == GameManager.instance.clientPlayerID)
-                {   
-                    playerNameUI.SetPlayerIndicator(true);
-                }else{
-                    playerNameUI.SetPlayerIndicator(false);
+                if (GameManager.instance.players.ContainsKey(info.clientID))
+                {
+                    GameObject obj = Instantiate(playerNamePref, transform); 
+                    PlayerNameUI playerNameUI = obj.GetComponent<PlayerNameUI>();
+                    playerNameUI.SetTarget(GameManager.instance.players[info.clientID].transform);
+                    playerNameUI.SetName(info.username.ToString());
+                    if (info.clientID == GameManager.instance.clientPlayerID)
+                    {   
+                        playerNameUI.SetPlayerIndicator(true);
+                    }else{
+                        playerNameUI.SetPlayerIndicator(false);
+                    }
+
+
+                    names.Add(info.clientID, playerNameUI);
                 }
-
-
-                names.Add(info.clientID, playerNameUI);
             }
         }else {
             foreach(var info in PlayerConnection.instance.clientInfo)
-            {        
-                GameObject obj = Instantiate(playerNamePref, transform); 
-                PlayerNameUI playerNameUI = obj.GetComponent<PlayerNameUI>();
-                playerNameUI.SetTarget(GameManager.instance.players[info.clientID].transform);
-                playerNameUI.SetName(info.username.ToString());
-                if (info.clientID == GameManager.instance.clientPlayerID)
-                {   
-                    playerNameUI.SetPlayerIndicator(true);
-                }else{
-                    playerNameUI.SetPlayerIndicator(false);
+            {      
+                if (GameManager.instance.players.ContainsKey(info.clientID))
+                { 
+                    GameObject obj = Instantiate(playerNamePref, transform); 
+                    PlayerNameUI playerNameUI = obj.GetComponent<PlayerNameUI>();
+                    playerNameUI.SetTarget(GameManager.instance.players[info.clientID].transform);
+                    playerNameUI.SetName(info.username.ToString());
+                    if (info.clientID == GameManager.instance.clientPlayerID)
+                    {   
+                        playerNameUI.SetPlayerIndicator(true);
+                    }else{
+                        playerNameUI.SetPlayerIndicator(false);
+                    }
+                    names.Add(info.clientID, playerNameUI);
                 }
-                names.Add(info.clientID, playerNameUI);
             }
         }
 

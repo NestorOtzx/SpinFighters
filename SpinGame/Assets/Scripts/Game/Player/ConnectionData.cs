@@ -28,20 +28,14 @@ public struct ConnectionData : INetworkSerializable, IEquatable<ConnectionData>
         serializer.SerializeValue(ref score);
         serializer.SerializeValue(ref isHost);
     }
-
-    // Método requerido por IEquatable<T>
     public bool Equals(ConnectionData other)
     {
         return clientID == other.clientID;
     }
-
-    // Sobrescribir GetHashCode para consistencia
     public override int GetHashCode()
     {
         return HashCode.Combine(clientID, username, skinId,score, isHost);
     }
-
-    // Sobrescribir Equals para compatibilidad con object
     public override bool Equals(object obj)
     {
         return obj is ConnectionData other && Equals(other);

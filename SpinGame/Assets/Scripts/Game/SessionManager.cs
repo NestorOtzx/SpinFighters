@@ -68,8 +68,8 @@ public class SessionManager : NetworkBehaviour
     void ConfigureTransport(string ip, ushort port)
     {
         UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-        transport.ConnectionData.Address = ip; // Escuchar en todas las interfaces
-        transport.ConnectionData.Port = port;        // Puerto personalizado
+        transport.ConnectionData.Address = ip; 
+        transport.ConnectionData.Port = port;
     }
 
     string GetLocalIPAddress()

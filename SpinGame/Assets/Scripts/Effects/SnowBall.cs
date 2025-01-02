@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class SnowBall : NetworkBehaviour
 {
-    public float growthRate = 0.1f; // Cuánto crece la bola de nieve por unidad de movimiento.
-    public float maxScale = 3.0f;  // Escala máxima de la bola de nieve.
+    public float growthRate = 0.1f;
+    public float maxScale = 3.0f;
 
     private Rigidbody rb;
     private Vector3 initialScale;

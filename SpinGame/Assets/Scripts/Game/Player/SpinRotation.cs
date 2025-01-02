@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class SpinRotation : MonoBehaviour
 {
-// Velocidad de rotación en grados por segundo
     public float rotationSpeed = 100f;
     public void Start()
     {

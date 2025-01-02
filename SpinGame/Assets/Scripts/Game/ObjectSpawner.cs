@@ -51,7 +51,6 @@ public class ObjectSpawner : NetworkBehaviour
     {
         Vector3 randomPosition = GetRandomPositionWithinRadius();
         int objId = Random.Range(0, objectsToSpawn.Length);
-        Debug.Log("Spawn! objid: "+objId);
         var obj = Instantiate(objectsToSpawn[objId], randomPosition, Quaternion.identity);
         obj.transform.localScale = Vector3.one*Random.Range(0.5f, 2f)*100;
         return obj;

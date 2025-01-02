@@ -5,7 +5,6 @@ using Unity.Netcode;
 
 public class PlayerSpawner : NetworkBehaviour
 {
-    // Start is called before the first frame update
     [SerializeField] private Transform [] spawnPoints;
     void Start()
     {

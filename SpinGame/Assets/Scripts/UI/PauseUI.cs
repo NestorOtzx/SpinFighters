@@ -9,6 +9,7 @@ using UnityEngine.SceneManagement;
 public class PauseUI : MonoBehaviour
 {
     [SerializeField] private GameObject container;
+    [SerializeField] private GameObject settingsContainer;
 
     private void Update()
     {
@@ -20,17 +21,33 @@ public class PauseUI : MonoBehaviour
 
     public void TogglePause()
     {
-        SetPause(!container.activeSelf);
+        if (container.activeSelf)
+        {
+            if (!settingsContainer.activeSelf)
+            {
+                SetPause(false);    
+            }
+        }else{
+            if (!settingsContainer.activeSelf)
+            {
+                SetPause(true);
+            }
+        }
     }
 
 
     public void SetPause(bool t)
     {
-        container.SetActive(t);
+        SetContainer(t);
         if (GameManager.instance.isSinglePlayer)
         {
             Time.timeScale = t?0:1;
         }
+    }
+
+    public void SetContainer(bool t)
+    {
+        container.SetActive(t);
     }
 
     private void OnDestroy()

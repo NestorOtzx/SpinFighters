@@ -382,6 +382,34 @@ public class PlayerConnection : NetworkBehaviour
         return client;
     }
 
+    public List<ulong> GetBestPlayersID()
+    {
+        List<ulong> ans = new List<ulong>();
+        if (GameManager.instance.isSinglePlayer)
+        {
+            int maxScore = GetMaxScore();
+
+            for (int i = 0; i<clientInfoSingle.Count; i++ )
+            {
+                if (clientInfoSingle[i].score == maxScore)
+                {
+                    ans.Add(clientInfoSingle[i].clientID);
+                }
+            }
+        }else{
+            int maxScore = GetMaxScore();
+
+            for (int i = 0; i<clientInfo.Count; i++ )
+            {
+                if (clientInfo[i].score == maxScore)
+                {
+                    ans.Add(clientInfo[i].clientID);
+                }
+            }
+        }
+        return ans;
+    }
+
     public bool CheckDraw()
     {
 

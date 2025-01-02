@@ -9,19 +9,19 @@ public class ControllableCharacter : NetworkBehaviour
     public Rigidbody rb;
 
     [SerializeField]
-    protected Transform headTransform; // Transform de la "cabeza" del jugador
+    protected Transform headTransform; 
 
     [SerializeField]
-    protected float maxJumpForce = 20f; // Fuerza máxima de salto
+    protected float maxJumpForce = 20f;
     [SerializeField]
-    protected float collisionForce = 5f; // Fuerza máxima de salto
+    protected float collisionForce = 5f; 
     [SerializeField]
-    protected float chargeRate = 10f; // Velocidad de carga de la fuerza
+    protected float chargeRate = 10f; 
     [SerializeField]
-    protected LayerMask groundLayer; // Capa del suelo
+    protected LayerMask groundLayer; 
 
-    protected float currentJumpForce = 0f; // Fuerza actual cargada
-    protected bool isCharging = false; // Indicador de si está cargando el salto
+    protected float currentJumpForce = 0f;
+    protected bool isCharging = false; 
 
     protected NetworkVariable<bool> isGrounded = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Owner);
     protected bool isGroundedSingle = false;
@@ -46,14 +46,14 @@ public class ControllableCharacter : NetworkBehaviour
     {
         if (IsServer ||  GameManager.instance.isSinglePlayer)
         {
-            CheckGrounded(); // Alternativa para detección precisa
+            CheckGrounded(); 
         }
     }
 
     protected void StartCharging()
     {
         isCharging = true;
-        currentJumpForce = 0f; // Resetea la fuerza al iniciar la carga
+        currentJumpForce = 0f;
     }
 
     protected void ChargeJumpForce()
@@ -61,7 +61,7 @@ public class ControllableCharacter : NetworkBehaviour
         if (isCharging)
         {
             currentJumpForce += chargeRate * Time.deltaTime;
-            currentJumpForce = Mathf.Clamp(currentJumpForce, 0f, maxJumpForce); // Limitar al máximo
+            currentJumpForce = Mathf.Clamp(currentJumpForce, 0f, maxJumpForce); 
         }
     }
 
@@ -71,9 +71,8 @@ public class ControllableCharacter : NetworkBehaviour
         {
             isCharging = false;
 
-             Vector3 jumpDirection = headTransform.forward;
+            Vector3 jumpDirection = headTransform.forward;
 
-            // Agregar componente vertical al salto
             Vector3 direction = jumpDirection + Vector3.up;
 
             
@@ -112,7 +111,7 @@ public class ControllableCharacter : NetworkBehaviour
 
     private void CheckGrounded()
     {
-        // Raycast hacia abajo desde la posición del jugador para detectar el suelo
+
         Ray ray = new Ray(transform.position, Vector3.down);
         if (Physics.Raycast(ray, out RaycastHit hit, 1.1f, groundLayer))
         {
@@ -139,7 +138,6 @@ public class ControllableCharacter : NetworkBehaviour
     {
         if (IsServer || GameManager.instance.isSinglePlayer)
         {
-            // Verificar si está tocando el suelo usando el LayerMask
             if (((1 << collision.gameObject.layer) & groundLayer) != 0)
             {
                 if (GameManager.instance.isSinglePlayer)
@@ -158,7 +156,6 @@ public class ControllableCharacter : NetworkBehaviour
     {
         if (IsServer || GameManager.instance.isSinglePlayer)
         {
-            // Si deja de tocar el suelo, actualizamos el estado
             if (((1 << collision.gameObject.layer) & groundLayer) != 0)
             {
                 if (GameManager.instance.isSinglePlayer)
@@ -188,7 +185,6 @@ public class ControllableCharacter : NetworkBehaviour
     private void ApplyRepulsionForce(GameObject otherPlayer)
     {
         Debug.Log("REPULSION FORCE");
-        // Obtener la dirección de la fuerza de repulsión
         Vector3 otherPos = otherPlayer.transform.position;
         Vector3 myPos = transform.position;
         myPos.y = 0;
@@ -198,10 +194,8 @@ public class ControllableCharacter : NetworkBehaviour
         Vector3 negative = -repulsionDirection;
         negative.y = 0.2f;
         //repulsionDirection.y = Mathf.Max(repulsionDirection.y, 0);
-        // Aplicar la fuerza al jugador actual en dirección opuesta
-        rb.AddForce(negative * collisionForce, ForceMode.Impulse); // Ajusta la magnitud de la fuerza
-        // Aplicar la fuerza al otro jugador
-        otherPlayer.GetComponent<Rigidbody>().AddForce(repulsionDirection * collisionForce, ForceMode.Impulse); // Ajusta la magnitud de la fuerza
+        rb.AddForce(negative * collisionForce, ForceMode.Impulse); 
+        otherPlayer.GetComponent<Rigidbody>().AddForce(repulsionDirection * collisionForce, ForceMode.Impulse); 
     }
 
     private bool IsPlayable()
@@ -228,12 +222,10 @@ public class ControllableCharacter : NetworkBehaviour
         {
             Gizmos.color = Color.red;
 
-            // Dibujar la línea de dirección del salto
             Vector3 start = headTransform.position;
             Vector3 end = start + headTransform.forward * 4.0f; // Largo de la línea
             Gizmos.DrawLine(start, end);
 
-            // Dibujar una pequeña esfera en la punta
             Gizmos.DrawSphere(end, 0.1f);
         }
     }

@@ -114,6 +114,7 @@ GameObject:
   - component: {fileID: 1024827467374822751}
   - component: {fileID: 8687822058296837875}
   - component: {fileID: 31289348088736724}
+  - component: {fileID: 4915281326829939559}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -263,6 +264,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefabToInstantiate: {fileID: 1446715566220128, guid: 24d461afd7be8334da30851bfa0f89a4, type: 3}
+  collisionLayer:
+    serializedVersion: 2
+    m_Bits: 64
+--- !u!114 &4915281326829939559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7523972650501600071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fe4a2afb76e6594a8d6571cede33265, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioID: 0
   collisionLayer:
     serializedVersion: 2
     m_Bits: 64

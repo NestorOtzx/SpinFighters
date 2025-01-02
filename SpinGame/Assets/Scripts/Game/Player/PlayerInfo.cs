@@ -18,7 +18,6 @@ public class PlayerInfo : NetworkBehaviour
 
     public void SetId(ulong id) //For single player only
     {
-        Debug.Log("Setting id!!!"+id);
         playerID = id;
         gameObject.name = "Player "+(playerID).ToString();
     }

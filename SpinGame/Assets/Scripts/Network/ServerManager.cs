@@ -11,9 +11,7 @@ using System.Linq;
 
 public class ServerManager : MonoBehaviour
 {
-
     private static bool runAsServer = false;
-    // Start is called before the first frame update
     void Start()
     {
         if (runAsServer)

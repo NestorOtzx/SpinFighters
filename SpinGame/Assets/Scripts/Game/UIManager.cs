@@ -5,7 +5,6 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
-    // Start is called before the first frame update
     [SerializeField] private GameObject winPanel, loosePanel, drawPanel;
 
     private void Awake(){

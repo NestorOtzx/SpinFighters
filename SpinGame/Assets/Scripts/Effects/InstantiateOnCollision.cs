@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class InstantiateOnCollision : NetworkBehaviour
 {
-    public GameObject prefabToInstantiate; // Prefab a instanciar
-    public LayerMask collisionLayer;      // Capa de colisión a detectar
+    public GameObject prefabToInstantiate; 
+    public LayerMask collisionLayer;  
 
     private void OnCollisionEnter(Collision collision)
     {

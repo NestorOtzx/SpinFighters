@@ -9,8 +9,6 @@ public class NetworkManagerHandler : MonoBehaviour
 {
     private void Awake()
     {
-
-        // Verificar si ya existe otro NetworkManager activo
         if (NetworkManager.Singleton != null && NetworkManager.Singleton != this.GetComponent<NetworkManager>() )
         {
             if (SceneManager.GetActiveScene().name == Utilities.SceneNames.JoinMatch.ToString())

@@ -28,6 +28,8 @@ public class GameManager : NetworkBehaviour
 
     public event Action<ulong> OnPlayerLost;
 
+    private List<ulong> drawPlayers = new List<ulong>();
+
     private void Awake()
     {
         remainingPlayerIDs = new NetworkList<ulong>();
@@ -61,21 +63,29 @@ public class GameManager : NetworkBehaviour
     public void SpawnPlayerSrv(ulong clientId, int spawn_id)
     {
         //Instantiate player
-        GameObject playerInstance = Instantiate(playerPrefab, playerSpawns[spawn_id].position, Quaternion.identity);
-        //Spawn on network
-        playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+        if (drawPlayers.Count == 0 || drawPlayers.Contains(clientId))
+        {
+            GameObject playerInstance = Instantiate(playerPrefab, playerSpawns[spawn_id].position, Quaternion.identity);
+            //Spawn on network
+            playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+        }
     }
 
     public void SpawnSinglePlayer()
     {
-        GameObject playerInstance = Instantiate(playerPrefab, playerSpawns[0].position, Quaternion.identity);
-        playerInstance.GetComponent<PlayerInfo>().SetId(0);
+        if (drawPlayers.Count == 0 || drawPlayers.Contains(0)){
+            GameObject playerInstance = Instantiate(playerPrefab, playerSpawns[0].position, Quaternion.identity);
+            playerInstance.GetComponent<PlayerInfo>().SetId(0);
+        }
         
         //Instantiate bots
         for(int i=1; i<Mathf.Min(PlayerConnection.instance.clientInfoSingle.Count, playerSpawns.Length); i++)
         {
-            GameObject obj = Instantiate(botPrefab, playerSpawns[i].position, Quaternion.identity);
-            obj.GetComponent<PlayerInfo>().SetId(PlayerConnection.instance.clientInfoSingle[i].clientID);
+            if (drawPlayers.Count == 0 || drawPlayers.Contains(PlayerConnection.instance.clientInfoSingle[i].clientID))
+            {
+                GameObject obj = Instantiate(botPrefab, playerSpawns[i].position, Quaternion.identity);
+                obj.GetComponent<PlayerInfo>().SetId(PlayerConnection.instance.clientInfoSingle[i].clientID);
+            }
         }
     }
 
@@ -87,7 +97,6 @@ public class GameManager : NetworkBehaviour
 
     private void OnDisable()
     {
-        // Desuscribirse para evitar errores al destruir el objeto
         SceneManager.sceneLoaded -= OnSceneLoaded;
         if (NetworkManager.Singleton)
         {
@@ -267,8 +276,10 @@ public class GameManager : NetworkBehaviour
             {
                 instance.LoadGameScene(SceneManager.GetActiveScene().name);
             }else{
-                if (PlayerConnection.instance.CheckDraw())
+                List<ulong> bestPlayers = PlayerConnection.instance.GetBestPlayersID();
+                if (bestPlayers.Count>1)
                 {
+                    drawPlayers = new List<ulong>(bestPlayers);
                     if (isSinglePlayer)
                     {
                         UIManager.instance.SetDraw();
