@@ -229,4 +229,19 @@ public class ControllableCharacter : NetworkBehaviour
             Gizmos.DrawSphere(end, 0.1f);
         }
     }
+
+    public float  GetChargeValue()
+    {
+        return this.currentJumpForce;
+    }
+
+    public float GetMaxCharge()
+    {
+        return this.maxJumpForce;
+    }
+
+    private void OnDisable()
+    {
+        isGrounded.Dispose();
+    }
 }

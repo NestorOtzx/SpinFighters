@@ -46,7 +46,7 @@ public class UIFollowTarget : MonoBehaviour
             rectTransform.localScale = Vector3.one * scale;
         }
     }
-    public void SetTarget(Transform target)
+    public virtual void SetTarget(Transform target)
     {
         this.target = target;
     }

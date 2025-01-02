@@ -49,3 +49,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c7c1f1df8393f74a94a054e8188e747, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerNamePref: {fileID: 6474430434165382519, guid: 9c2abf4460761ce42b0d428b9787da2d, type: 3}
+  chargeBarPref: {fileID: 4499601436249556798, guid: 8f9c7516b82465348b3d0999b12af2cb, type: 3}

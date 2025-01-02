@@ -95,9 +95,15 @@ public class Bot : ControllableCharacter
             else if (currentJumpForce < maxJumpForce-err){
                 ChargeJumpForce();
             }else if (isFacingEnemy){
-                ReleaseJumpForce();
+                StartCoroutine(RandomJump());
             }
         }
+    }
+
+    private IEnumerator RandomJump()
+    {
+        yield return new WaitForSeconds(Random.Range(0f, 0.4f));
+        ReleaseJumpForce();
     }
 
     private bool FacingObjective(Transform objective)

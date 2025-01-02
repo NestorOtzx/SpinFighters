@@ -7,8 +7,10 @@ using UnityEngine;
 public class PlayerNames : MonoBehaviour
 {
     [SerializeField] private GameObject playerNamePref;
+    [SerializeField] private GameObject chargeBarPref;
 
     Dictionary<ulong, PlayerNameUI> names = new Dictionary<ulong, PlayerNameUI>();
+    ChargeBar playerCharge;
     void Start()
     {
         GameManager.instance.OnPlayerLost += OnPlayerLost;
@@ -35,11 +37,14 @@ public class PlayerNames : MonoBehaviour
                 {
                     GameObject obj = Instantiate(playerNamePref, transform); 
                     PlayerNameUI playerNameUI = obj.GetComponent<PlayerNameUI>();
-                    playerNameUI.SetTarget(GameManager.instance.players[info.clientID].transform);
+                    Transform target = GameManager.instance.players[info.clientID].transform;
+                    playerNameUI.SetTarget(target);
                     playerNameUI.SetName(info.username.ToString());
                     if (info.clientID == GameManager.instance.clientPlayerID)
                     {   
                         playerNameUI.SetPlayerIndicator(true);
+                        playerCharge = Instantiate(chargeBarPref, transform).GetComponent<ChargeBar>();
+                        playerCharge.SetTarget(target);
                     }else{
                         playerNameUI.SetPlayerIndicator(false);
                     }
@@ -55,11 +60,14 @@ public class PlayerNames : MonoBehaviour
                 { 
                     GameObject obj = Instantiate(playerNamePref, transform); 
                     PlayerNameUI playerNameUI = obj.GetComponent<PlayerNameUI>();
-                    playerNameUI.SetTarget(GameManager.instance.players[info.clientID].transform);
+                    Transform target = GameManager.instance.players[info.clientID].transform;
+                    playerNameUI.SetTarget(target);
                     playerNameUI.SetName(info.username.ToString());
                     if (info.clientID == GameManager.instance.clientPlayerID)
                     {   
                         playerNameUI.SetPlayerIndicator(true);
+                        playerCharge = Instantiate(chargeBarPref, transform).GetComponent<ChargeBar>();
+                        playerCharge.SetTarget(target);
                     }else{
                         playerNameUI.SetPlayerIndicator(false);
                     }
@@ -100,6 +108,10 @@ public class PlayerNames : MonoBehaviour
         if (names.ContainsKey(playerID) && names[playerID] != null)
         {
             Destroy(names[playerID].gameObject);
+            if (playerID == GameManager.instance.clientPlayerID)
+            {
+                Destroy(playerCharge.gameObject);
+            }
         }
     }
 }

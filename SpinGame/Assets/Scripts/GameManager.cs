@@ -102,6 +102,8 @@ public class GameManager : NetworkBehaviour
         {
             NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnect;
         }
+        roundsPlayed.Dispose();
+        //remainingPlayerIDs.Dispose(); 
     }
 
 
@@ -206,11 +208,6 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-
-    public override void OnDestroy()
-    {
-        remainingPlayerIDs.Dispose(); // Limpia correctamente si ya no se usa.
-    }
 
     private void OnEndRound()
     {   

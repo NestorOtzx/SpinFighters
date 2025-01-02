@@ -145,6 +145,8 @@ public class PlayerConnection : NetworkBehaviour
             NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisonnect;
             clientInfo.OnListChanged -= UpdateClientList;
         }
+
+        //clientInfo.Dispose(); 
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
