@@ -9,16 +9,74 @@ using System.Linq;
 using System.Text;
 using UnityEngine.Networking;
 using Newtonsoft.Json;
+using System;
 public class SessionManager : NetworkBehaviour
 {
+    public event Action<string> StateMessageEvents;
+    public event Action onClientStartConnection;
+    public event Action onClientStopConnection;
+
     struct CreateMatchData{
         public string ip;
         public int port;
     };
 
+    public float connectionTimeout = 5f; // Tiempo máximo para intentar conectar (en segundos)
+    private bool isTryingToConnect = false;
+
+    Coroutine connectingCoroutine;
+
+    public void StartClientConnection()
+    {
+        if (isTryingToConnect) { return; }
+
+        isTryingToConnect = true;
+        connectingCoroutine = StartCoroutine(TryConnect());
+    }
+
+    private IEnumerator TryConnect()
+    {
+        try{
+
+            NetworkManager.Singleton.StartClient();
+        }catch(Exception error)
+        {
+            Debug.Log("ERROR!!!"+error.Message);
+        }
+        onClientStartConnection?.Invoke();
+
+        float startTime = Time.time;
+
+        Debug.Log("Try connect 1");
+        while (!NetworkManager.Singleton.IsConnectedClient)
+        {
+            Debug.Log("Try connect 2");
+            if (Time.time - startTime >= connectionTimeout)
+            {
+                
+                StopConnectionAttempt();
+                yield break;
+            }
+            yield return null;
+        }
+        onClientStopConnection?.Invoke();
+        isTryingToConnect = false;
+    }
+
+    private void StopConnectionAttempt()
+    {
+        Debug.Log("Try connect 3");
+        if (NetworkManager.Singleton)
+        {
+            NetworkManager.Singleton.Shutdown();
+        }
+        isTryingToConnect = false;
+        onClientStopConnection?.Invoke();
+        StateMessageEvents?.Invoke("Could not connect to the game");
+    }
+
     private void OnDisable()
     {
-
         if (NetworkManager.Singleton)
         {
             NetworkManager.Singleton.OnClientStarted-=OnClientStarted;
@@ -34,6 +92,7 @@ public class SessionManager : NetworkBehaviour
             NetworkManager.Singleton.OnClientStarted+=OnClientStarted;
             NetworkManager.Singleton.OnClientDisconnectCallback+= OnClientDisonnect;
             NetworkManager.Singleton.OnServerStarted += OnServerStarted;
+
             string ip = GetLocalIPAddress();
             var args = System.Environment.GetCommandLineArgs();
             // Configurar puerto basado en el argumento
@@ -45,8 +104,7 @@ public class SessionManager : NetworkBehaviour
             }
 
             ConfigureTransport(ip, port);
-            NetworkManager.Singleton.StartServer();
-            
+            NetworkManager.Singleton.StartServer();   
         }
     }
 
@@ -69,7 +127,12 @@ public class SessionManager : NetworkBehaviour
     {
         UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
         transport.ConnectionData.Address = ip; 
-        transport.ConnectionData.Port = port;
+        try{
+            transport.ConnectionData.Port = port;
+
+        }catch{
+            Debug.Log("HERE");
+        }
     }
 
     string GetLocalIPAddress()
@@ -86,7 +149,7 @@ public class SessionManager : NetworkBehaviour
     }
 
     
-    public void ConnectClientToMatch(string ip, ushort port, string _username)
+    public void ConnectClientToMatch(string ip, string portString, string _username)
     {
         var connectionData = new {
             username = _username,
@@ -98,11 +161,26 @@ public class SessionManager : NetworkBehaviour
         Debug.Log("DATA IN JSON: "+jsonData);
         byte[] payload = Encoding.UTF8.GetBytes(jsonData);
 
-        NetworkManager.Singleton.NetworkConfig.ConnectionData = payload;
+        NetworkManager.Singleton.GetComponent<UnityTransport>().ConnectTimeoutMS = 1000;
 
-        ConfigureTransport(ip, port);
-        NetworkManager.Singleton.StartClient();
+        NetworkManager.Singleton.NetworkConfig.ConnectionData = payload;
+        NetworkManager.Singleton.OnClientDisconnectCallback+= OnClientDisonnect;
+
+        ushort port = 0;
+        try{
+            port = ushort.Parse(portString);
+            
+        }catch{
+            StateMessageEvents?.Invoke("The code is not valid!");
+        }
+        if (port > 0)
+        {
+            ConfigureTransport(ip, port);
+            StartClientConnection();
+        }
     }
+
+
 
     public void CreateMatch(string ip, string username)
     {
@@ -131,7 +209,7 @@ public class SessionManager : NetworkBehaviour
                 string jsonResponse = webRequest.downloadHandler.text;
                 Debug.Log($"Respuesta JSON: {jsonResponse}");
                 CreateMatchData data = JsonUtility.FromJson<CreateMatchData>(jsonResponse);
-                ConnectClientToMatch(ip, (ushort)data.port, username);
+                ConnectClientToMatch(ip, data.port.ToString(), username);
             }
         }
     }
@@ -139,7 +217,16 @@ public class SessionManager : NetworkBehaviour
 
     private void OnClientDisonnect(ulong clientID)
     {
-        Debug.Log("Player "+clientID+ " disconnected");
+        Debug.Log("On client disconnect, id: "+clientID);
+        if (!NetworkManager.Singleton.IsServer && NetworkManager.Singleton.DisconnectReason != string.Empty)
+        {
+            Debug.Log("Player "+clientID+ " disconnected Reason: "+NetworkManager.Singleton.DisconnectReason);
+            StateMessageEvents?.Invoke(NetworkManager.Singleton.DisconnectReason);
+            if (connectingCoroutine != null)
+            {
+                StopCoroutine(connectingCoroutine);
+            }
+        }
     }
 
 

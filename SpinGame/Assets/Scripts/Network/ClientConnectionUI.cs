@@ -22,8 +22,8 @@ public class ClientConnectionUI : MonoBehaviour
             SceneManager.LoadScene(Utilities.SceneNames.FindMatch.ToString());
             });
         buttons[1].onClick.AddListener(() => {
-            Debug.Log("Clicked connect player");
-            session.ConnectClientToMatch(ipInput.text,  ushort.Parse(portInput.text), usernameInput.text);
+            
+            session.ConnectClientToMatch(ipInput.text, portInput.text, usernameInput.text);
             });
         buttons[2].onClick.AddListener(() => {
             Debug.Log("Clicked create match");

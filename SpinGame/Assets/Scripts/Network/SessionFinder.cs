@@ -35,7 +35,7 @@ public class SessionFinder : MonoBehaviour
 
     public void ConnectToSelected()
     {
-        manager.ConnectClientToMatch(serverIp.text, (ushort)currentPort, username.text);
+        manager.ConnectClientToMatch(serverIp.text, currentPort.ToString(), username.text);
     }
 
     public void FindMatches()

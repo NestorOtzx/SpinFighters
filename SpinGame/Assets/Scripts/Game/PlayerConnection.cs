@@ -162,22 +162,28 @@ public class PlayerConnection : NetworkBehaviour
     {
         Debug.Log("[PlayerConnection] On Connection approval");
         
-        string jsonData = Encoding.UTF8.GetString(request.Payload);
+        if (NetworkManager.Singleton.ConnectedClientsIds.Count < 2)
+        {
+            string jsonData = Encoding.UTF8.GetString(request.Payload);
 
-        var connectionData = JsonConvert.DeserializeObject<ConnectionData>(jsonData);
+            var connectionData = JsonConvert.DeserializeObject<ConnectionData>(jsonData);
 
-        Debug.Log($"Client {request.ClientNetworkId} data ( username:  {connectionData.username}, skin: {connectionData.skinId}");
+            Debug.Log($"Client {request.ClientNetworkId} data ( username:  {connectionData.username}, skin: {connectionData.skinId}");
 
-        // Aprobar la conexión
-        response.Approved = true;
-        response.CreatePlayerObject = false;
+            // Aprobar la conexión
+            response.Approved = true;
+            response.CreatePlayerObject = false;
 
-        // Guardar los datos
-        if (response.Approved && NetworkManager.Singleton.IsServer)
-        {   
-            PrintInfo();
-            ConnectionData data = new ConnectionData(request.ClientNetworkId, connectionData.username, connectionData.skinId);
-            pendingInfo.Add(request.ClientNetworkId, data);
+            // Guardar los datos
+            if (response.Approved && NetworkManager.Singleton.IsServer)
+            {   
+                PrintInfo();
+                ConnectionData data = new ConnectionData(request.ClientNetworkId, connectionData.username, connectionData.skinId);
+                pendingInfo.Add(request.ClientNetworkId, data);
+            }
+        }else{
+            response.Approved = false;
+            response.Reason = "The session is full";
         }
     }
 
