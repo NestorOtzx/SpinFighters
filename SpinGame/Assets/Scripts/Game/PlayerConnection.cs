@@ -161,8 +161,9 @@ public class PlayerConnection : NetworkBehaviour
     private void OnConnectionApproval(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
         Debug.Log("[PlayerConnection] On Connection approval");
+        int maxPlayers = 8;
         
-        if (NetworkManager.Singleton.ConnectedClientsIds.Count < 2)
+        if (NetworkManager.Singleton.ConnectedClientsIds.Count < maxPlayers)
         {
             string jsonData = Encoding.UTF8.GetString(request.Payload);
 
