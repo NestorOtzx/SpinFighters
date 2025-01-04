@@ -21,7 +21,7 @@ public class SessionManager : NetworkBehaviour
         public int port;
     };
 
-    public float connectionTimeout = 5f; // Tiempo máximo para intentar conectar (en segundos)
+    public float connectionTimeout = 5f; 
     private bool isTryingToConnect = false;
 
     Coroutine connectingCoroutine;
@@ -95,7 +95,7 @@ public class SessionManager : NetworkBehaviour
 
             string ip = GetLocalIPAddress();
             var args = System.Environment.GetCommandLineArgs();
-            // Configurar puerto basado en el argumento
+
             var portArg = args.FirstOrDefault(arg => arg.StartsWith("-port"));
             ushort port = 7777;
             if (portArg != null)
@@ -190,19 +190,21 @@ public class SessionManager : NetworkBehaviour
     IEnumerator CreateMatchCoroutine(string ip, string username)
     {
         string url = "http://"+ip+":5100/MatchMaking/CreateMatch";
+        //string url = "http://"+"192.168.0.104"+":5100/MatchMaking/CreateMatch";
         Debug.Log(url);
 
-        // Crear la solicitud
+        
+        onClientStartConnection?.Invoke();
         using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
         {
-            // Enviar la solicitud y esperar la respuesta
             yield return webRequest.SendWebRequest();
 
-            // Manejo de errores
             if (webRequest.result == UnityWebRequest.Result.ConnectionError || 
                 webRequest.result == UnityWebRequest.Result.ProtocolError)
             {
-                Debug.LogError($"Error: {webRequest.error}");
+                //Debug.LogError($"Error: {webRequest.error}");
+                StateMessageEvents?.Invoke("Servers are currently unavailable");
+                onClientStopConnection?.Invoke();
             }
             else
             {
@@ -211,6 +213,7 @@ public class SessionManager : NetworkBehaviour
                 CreateMatchData data = JsonUtility.FromJson<CreateMatchData>(jsonResponse);
                 ConnectClientToMatch(ip, data.port.ToString(), username);
             }
+            
         }
     }
 

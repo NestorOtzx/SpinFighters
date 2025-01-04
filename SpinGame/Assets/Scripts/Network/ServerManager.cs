@@ -41,6 +41,17 @@ public class ServerManager : MonoBehaviour
         else if (SceneManager.GetActiveScene().name == Utilities.SceneNames.MatchMaking.ToString())
         {
             Debug.Log("Match making loaded");
+            StartCoroutine(CloseServerIfNoConnections());
+        }
+    }
+
+    private IEnumerator CloseServerIfNoConnections()
+    {
+        yield return new WaitForSeconds(10);
+        if (NetworkManager.Singleton && NetworkManager.Singleton.ConnectedClientsList.Count == 0 && gameObject)
+        {
+            Debug.Log("No clients joined to the match, closing process");
+            Application.Quit();
         }
     }
 
